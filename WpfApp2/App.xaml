@@ -13,8 +13,10 @@
                             Visibility="Visible">
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu  Opened="ContextMenu_Opened">
-                        <MenuItem Header="打开" FontSize="10" Command="{Binding OpenCommand}"/>
-                        <MenuItem Header="退出" FontSize="10" Command="{Binding ExitCommand}"/>
+                        <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="10"/>
+                        <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="10"/>
+                        <!-- <MenuItem Header="打开" FontSize="10" Command="{Binding OpenCommand}"/> -->
+                        <!-- <MenuItem Header="退出" FontSize="10" Command="{Binding ExitCommand}"/> -->
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>

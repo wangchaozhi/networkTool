@@ -157,4 +157,9 @@ public partial class MainWindow : Window,IWindowService
     {
         OpenCommandExecuted();
     }
+
+    public void HideWindow()
+    {
+        Hide();
+    }
 }
