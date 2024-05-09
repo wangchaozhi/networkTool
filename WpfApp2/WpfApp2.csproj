@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+<!--        <DebugType>None</DebugType>-->
+<!--        <DebugSymbols>false</DebugSymbols>-->
+<!--        <ImplicitUsings>enable</ImplicitUsings>-->
+        <UseWPF>true</UseWPF>
+<!--        <RuntimeIdentifiers>linux-x64;win-x86</RuntimeIdentifiers>-->
+        <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
+        <ApplicationIcon>res\icon.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="res\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="res\icon.ico" />
+      <Resource Include="res\icon.ico" />
+    </ItemGroup>
+
+</Project>
