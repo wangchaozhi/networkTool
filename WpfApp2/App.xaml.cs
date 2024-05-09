@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Win32;
 
 namespace WpfApp2;
 
@@ -29,37 +30,49 @@ public partial class App : Application
         public int X;
         public int Y;
     }
-
-    // protected override void OnStartup(StartupEventArgs e)
+    
+    // private void InitializeAutoStartMenuItem()
     // {
-    //     // base.OnStartup(e);
-    //     //
-    //     // // 初始化托盘图标
-    //     // notifyIcon = (TaskbarIcon)FindResource("MyNotifyIcon");
-    //     // notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;
-    //     // // 显示主窗口
-    //     // // MainWindow = new MainWindow();
-    //     // // MainWindow.Show();
-    //     // // MainWindow.Hide(); // 启动时隐藏窗口
-    //     
-    //     
-    //     base.OnStartup(e);
+    //     string appName = "MyApp";
+    //     RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false);
+    //     bool isAutoStartEnabled = key.GetValue(appName) != null;
     //
-    //     // 从资源中获取托盘图标实例并设置
-    //     notifyIcon = (TaskbarIcon)FindResource("MyNotifyIcon");
-    //     notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;
-    //     var mainWindow = new MainWindow();
-    //
-    //     // 设置托盘图标的 DataContext
-    //     var viewModel = new MainViewModel(mainWindow);
-    //     notifyIcon.DataContext = viewModel;
-    //     // 初始化并显示主窗口
-    //     MainWindow = mainWindow;
-    //     MainWindow.DataContext = viewModel; // 确保主窗口也使用相同的 ViewModel
-    //     MainWindow.Show();
-    //     // MainWindow.Hide(); // 启动时隐藏主窗口
+    //     var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
+    //     autoStartMenu.IsChecked = isAutoStartEnabled;
     // }
     
+    
+    // private void InitializeAutoStartMenuItem()
+    // {
+    //     string appName = "MyApp";
+    //     using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
+    //     {
+    //         bool isAutoStartEnabled = key != null && key.GetValue(appName) != null;
+    //         var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
+    //         autoStartMenu.IsChecked = isAutoStartEnabled;
+    //     }
+    // }
+    
+    
+    private void InitializeAutoStartMenuItem()
+    {
+        string appName = "MyApp";
+        try
+        {
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
+            {
+                bool isAutoStartEnabled = key != null && key.GetValue(appName) != null;
+                var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
+                autoStartMenu.IsChecked = isAutoStartEnabled;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to initialize auto-start settings: {ex.Message}");
+        }
+    }
+
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -74,7 +87,12 @@ public partial class App : Application
 
         notifyIcon = (TaskbarIcon)FindResource("MyNotifyIcon");
         notifyIcon.DataContext = viewModel;
+        // 注册事件
+        var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[1] as MenuItem;
+        autoStartMenu.Checked += AutoStart_Checked;
+        autoStartMenu.Unchecked += AutoStart_Unchecked;
         notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;
+        InitializeAutoStartMenuItem();
     
         MainWindow.Show();
         // MainWindow.Hide(); // 根据需要取消注释
@@ -119,6 +137,40 @@ public partial class App : Application
             }
         }
     }
+    
+    private void AutoStart_Checked(object sender, RoutedEventArgs e)
+    {
+        SetApplicationToRunAtStartup();
+    }
+
+    private void AutoStart_Unchecked(object sender, RoutedEventArgs e)
+    {
+        RemoveApplicationFromStartup();
+    }
+
+    private void SetApplicationToRunAtStartup()
+    {
+        string appName = "MyApp";
+        string appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        // 确认路径以.dll结尾，然后替换为.exe
+        if (appPath.EndsWith(".dll"))
+        {
+            appPath = appPath.Replace(".dll", ".exe");
+        }
+
+
+        RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        key.SetValue(appName, $"\"{appPath}\"");
+    }
+
+    private void RemoveApplicationFromStartup()
+    {
+        string appName = "MyApp";
+        RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        key.DeleteValue(appName, false);
+    }
+
+
 
 
 
