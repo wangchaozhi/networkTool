@@ -24,14 +24,28 @@ public partial class MainWindow : Window,IWindowService
         InitializeComponent();
         InitializeNetworkInterface();
         StartMonitoring();
-        
-        var viewModel = new MainViewModel(this);
-        // 监听 ViewModel 中的窗口显示状态变化
-        this.DataContext = viewModel;
-        // 将 TaskbarIcon 的 DataContext 设置为 ViewModel
-        var notifyIcon = (TaskbarIcon)Application.Current.FindResource("MyNotifyIcon");
-        notifyIcon.DataContext = viewModel;
+        //
+        // var viewModel = new MainViewModel(this);
+        // // 监听 ViewModel 中的窗口显示状态变化
+        // this.DataContext = viewModel;
+        // // 将 TaskbarIcon 的 DataContext 设置为 ViewModel
+        // var notifyIcon = (TaskbarIcon)Application.Current.FindResource("MyNotifyIcon");
+        // notifyIcon.DataContext = viewModel;
     }
+    
+    
+    
+    // public MainWindow()
+    // {
+    //     InitializeComponent();
+    //     InitializeNetworkInterface();
+    //     StartMonitoring();
+    //
+    //     // 设置 DataContext
+    //     var viewModel = new MainViewModel(this);
+    //     this.DataContext = viewModel;
+    // }
+
 
  
 

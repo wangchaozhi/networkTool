@@ -32,15 +32,32 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        // base.OnStartup(e);
+        //
+        // // 初始化托盘图标
+        // notifyIcon = (TaskbarIcon)FindResource("MyNotifyIcon");
+        // notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;
+        // // 显示主窗口
+        // // MainWindow = new MainWindow();
+        // // MainWindow.Show();
+        // // MainWindow.Hide(); // 启动时隐藏窗口
+        
+        
         base.OnStartup(e);
 
-        // 初始化托盘图标
+        // 从资源中获取托盘图标实例并设置
         notifyIcon = (TaskbarIcon)FindResource("MyNotifyIcon");
         notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;
-        // 显示主窗口
-        // MainWindow = new MainWindow();
-        // MainWindow.Show();
-        // MainWindow.Hide(); // 启动时隐藏窗口
+        var mainWindow = new MainWindow();
+
+        // 设置托盘图标的 DataContext
+        var viewModel = new MainViewModel(mainWindow);
+        notifyIcon.DataContext = viewModel;
+        // 初始化并显示主窗口
+        MainWindow = mainWindow;
+        MainWindow.DataContext = viewModel; // 确保主窗口也使用相同的 ViewModel
+        MainWindow.Show();
+        // MainWindow.Hide(); // 启动时隐藏主窗口
     }
     
     private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
