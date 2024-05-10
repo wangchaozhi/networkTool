@@ -157,8 +157,7 @@ public partial class App : Application
         {
             appPath = appPath.Replace(".dll", ".exe");
         }
-
-
+        
         RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         key.SetValue(appName, $"\"{appPath}\"");
     }
@@ -170,14 +169,14 @@ public partial class App : Application
         key.DeleteValue(appName, false);
     }
 
-
-
-
-
-
+    
     protected override void OnExit(ExitEventArgs e)
     {
-        notifyIcon.Dispose(); // 清理托盘图标
+        if (notifyIcon != null)
+        {
+            notifyIcon.Dispose(); // 清理托盘图标，避免残留
+        }
         base.OnExit(e);
     }
+
 }

@@ -24,6 +24,10 @@
     <ItemGroup>
       <None Remove="res\icon.ico" />
       <Resource Include="res\icon.ico" />
+      <None Remove="res\down.png" />
+      <Resource Include="res\down.png" />
+      <None Remove="res\up.png" />
+      <Resource Include="res\up.png" />
     </ItemGroup>
 
 </Project>
