@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 
@@ -22,9 +23,45 @@ public partial class MainWindow : Window,IWindowService
     public MainWindow()
     {
         InitializeComponent();
+        this.SourceInitialized += MainWindow_SourceInitialized;
+        // 设置窗口启动位置
+        this.Loaded += MainWindow_Loaded;
         InitializeNetworkInterface();
         StartMonitoring();
       
+    }
+    
+    private void MainWindow_SourceInitialized(object sender, EventArgs e)
+    {
+        var hWnd = new WindowInteropHelper(this).Handle;
+        EnableGlassEffect(hWnd);
+    }
+
+    private void EnableGlassEffect(IntPtr hWnd)
+    {
+        var margins = new GlassEffect.MARGINS { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
+        GlassEffect.DwmExtendFrameIntoClientArea(hWnd, ref margins);
+
+        var bb = new GlassEffect.DWM_BLURBEHIND
+        {
+            dwFlags = GlassEffect.DWM_BB_ENABLE,
+            fEnable = true,
+            hRgnBlur = IntPtr.Zero,
+            fTransitionOnMaximized = true
+        };
+        GlassEffect.DwmEnableBlurBehindWindow(hWnd, ref bb);
+    }
+    
+    
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        // 获取屏幕工作区域的宽度和高度
+        double screenWidth = SystemParameters.WorkArea.Width;
+        double screenHeight = SystemParameters.WorkArea.Height;
+
+        // 设置窗口在屏幕右上角
+        this.Left = screenWidth/1.15;
+        this.Top = screenHeight/22;
     }
     
 
@@ -32,6 +69,7 @@ public partial class MainWindow : Window,IWindowService
     {
         // 取消关闭事件，使得窗口不会真的被关闭
         e.Cancel = true;
+        this.Hide();
         ((MainViewModel)DataContext).IsWindowVisible = false;
         base.OnClosing(e);
     }

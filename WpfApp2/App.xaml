@@ -12,9 +12,9 @@
                             Visibility="Visible">
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu  Opened="ContextMenu_Opened">
-                        <MenuItem Header="启动时运行" IsCheckable="True" Checked="AutoStart_Checked" Unchecked="AutoStart_Unchecked"/>
-                        <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="10"/>
-                        <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="10"/>
+                        <MenuItem Header="开机自启" IsCheckable="True" Checked="AutoStart_Checked" Unchecked="AutoStart_Unchecked" FontSize="11"/>
+                        <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="11"/>
+                        <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>
