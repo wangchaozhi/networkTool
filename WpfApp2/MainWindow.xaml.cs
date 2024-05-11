@@ -11,7 +11,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 
 namespace WpfApp2;
 
-public partial class MainWindow : Window,IWindowService
+public partial class MainWindow : IWindowService
 {
     private long lastBytesSent = 0;
     private long lastBytesReceived = 0;
@@ -23,12 +23,21 @@ public partial class MainWindow : Window,IWindowService
     public MainWindow()
     {
         InitializeComponent();
-        this.SourceInitialized += MainWindow_SourceInitialized;
+        // GlassWindowManager.EnableGlassEffect(this);
+        // 注册窗体关闭事件以清理资源
+        // this.Closed += MainWindow_Closed;
+        // this.SourceInitialized += MainWindow_SourceInitialized;
         // 设置窗口启动位置
         this.Loaded += MainWindow_Loaded;
         InitializeNetworkInterface();
         StartMonitoring();
       
+    }
+    
+    private void MainWindow_Closed(object sender, EventArgs e)
+    {
+        // 在窗体关闭时注销事件处理程序
+        this.Closed -= MainWindow_Closed;
     }
     
     private void MainWindow_SourceInitialized(object sender, EventArgs e)
@@ -65,14 +74,14 @@ public partial class MainWindow : Window,IWindowService
     }
     
 
-    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-    {
-        // 取消关闭事件，使得窗口不会真的被关闭
-        e.Cancel = true;
-        this.Hide();
-        ((MainViewModel)DataContext).IsWindowVisible = false;
-        base.OnClosing(e);
-    }
+    // protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    // {
+    //     // 取消关闭事件，使得窗口不会真的被关闭
+    //     e.Cancel = true;
+    //     this.Hide();
+    //     ((MainViewModel)DataContext).IsWindowVisible = false;
+    //     base.OnClosing(e);
+    // }
     
 
     private void InitializeNetworkInterface()

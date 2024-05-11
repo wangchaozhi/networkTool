@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -30,6 +31,15 @@ public partial class App : Application
         public int X;
         public int Y;
     }
+    
+    [DllImport("user32.dll")]
+    static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+    [DllImport("user32.dll")]
+    static extern bool SetForegroundWindow(IntPtr hWnd);
+    
+    static Mutex mutex = new Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");  // 使用一个唯一的标识符
+    private bool hasMutex = false;  // 添加字段来跟踪互斥锁的拥有权
     
     // private void InitializeAutoStartMenuItem()
     // {
@@ -75,6 +85,30 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        
+        
+        // if (!mutex.WaitOne(TimeSpan.Zero, true))
+        // {
+        //     // 如果已有一个实例在运行，就提示用户并关闭此实例
+        //     MessageBox.Show("应用程序已经在运行。");
+        //     Application.Current.Shutdown();  // 关闭当前应用程序实例
+        //     return;
+        // }
+
+        hasMutex = mutex.WaitOne(TimeSpan.Zero, true);
+        if (!hasMutex)
+        {
+            // 如果获取互斥锁失败，则可能已有实例在运行
+            IntPtr hWnd = FindWindow(null, "MainWindow");  // 确保窗口标题正确
+            if (hWnd != IntPtr.Zero)
+            {
+                SetForegroundWindow(hWnd);  // 将已运行的实例窗口带到前台
+            }
+            Application.Current.Shutdown();  // 关闭当前应用程序实例
+            return;
+        }
+
+
         base.OnStartup(e);
     
         var mainWindow = new MainWindow();
@@ -172,6 +206,10 @@ public partial class App : Application
     
     protected override void OnExit(ExitEventArgs e)
     {
+        if (hasMutex)
+        {
+            mutex.ReleaseMutex();  // 只有在成功获取互斥锁时才释放它
+        }
         if (notifyIcon != null)
         {
             notifyIcon.Dispose(); // 清理托盘图标，避免残留
