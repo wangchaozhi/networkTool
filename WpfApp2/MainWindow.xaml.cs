@@ -163,9 +163,6 @@ public partial class MainWindow : IWindowService
     {
         NetworkInterface bestInterface = null;
         long maxData = 0;
-        
-
-
         foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
         {
             // 排除虚拟接口和非活跃接口
@@ -192,6 +189,9 @@ public partial class MainWindow : IWindowService
         {
             Console.WriteLine($"Selected interface: {bestInterface.Description}");
             currentInterface = bestInterface; // 更新当前接口
+            var initialStats = currentInterface.GetIPv4Statistics();
+            lastBytesSent = initialStats.BytesSent;
+            lastBytesReceived = initialStats.BytesReceived;
             // 重新启动监控，确保监控当前选择的接口
             StartMonitoringAsync();
         }
@@ -248,8 +248,19 @@ public partial class MainWindow : IWindowService
 
     private string FormatSpeed(long speed)
     {
-        // 格式化速度，例如转换为KB/s或MB/s
-        return $"{speed / 1024.0:F2} KB/s";
+        double speedInKBps = speed / 1024.0;  // 将速度转换为KB/s
+        if (speedInKBps >= 1048576)  // 如果速度超过1048576 KB/s，即超过1 GB/s
+        {
+            return $"{speedInKBps / 1048576.0:F2} GB/s";  // 显示为GB/s
+        }
+        else if (speedInKBps >= 1024)  // 如果速度超过1024 KB/s，即超过1 MB/s
+        {
+            return $"{speedInKBps / 1024.0:F2} MB/s";  // 显示为MB/s
+        }
+        else
+        {
+            return $"{speedInKBps:F2} KB/s";  // 显示为KB/s
+        }
     }
 
 
