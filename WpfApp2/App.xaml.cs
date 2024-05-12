@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using Microsoft.Win32;
 
@@ -37,6 +38,9 @@ public partial class App : Application
 
     [DllImport("user32.dll")]
     static extern bool SetForegroundWindow(IntPtr hWnd);
+    
+    [DllImport("user32.dll")]
+    static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     
     static Mutex mutex = new Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");  // 使用一个唯一的标识符
     private bool hasMutex = false;  // 添加字段来跟踪互斥锁的拥有权
@@ -103,6 +107,9 @@ public partial class App : Application
             if (hWnd != IntPtr.Zero)
             {
                 SetForegroundWindow(hWnd);  // 将已运行的实例窗口带到前台
+                // 也可以选择显示或隐藏窗口
+                // ShowWindow(hWnd, 5);  // SW_SHOW
+                // ShowWindow(hWnd, 0);  // SW_HIDE
             }
             Application.Current.Shutdown();  // 关闭当前应用程序实例
             return;
@@ -110,6 +117,8 @@ public partial class App : Application
 
 
         base.OnStartup(e);
+        this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledException;
     
         var mainWindow = new MainWindow();
         MainWindow = mainWindow;
@@ -130,6 +139,19 @@ public partial class App : Application
     
         MainWindow.Show();
         // MainWindow.Hide(); // 根据需要取消注释
+    }
+    
+    
+    private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        MessageBox.Show($"An unhandled exception occurred: {e.Exception.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        e.Handled = true; // Prevent the application from crashing
+    }
+
+    private void AppDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        MessageBox.Show($"A critical unhandled exception occurred: {e.ExceptionObject}", "Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        // Consider logging the exception and shutting down the application
     }
 
     

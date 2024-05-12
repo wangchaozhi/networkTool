@@ -1,7 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.NetworkInformation;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -29,8 +32,8 @@ public partial class MainWindow : IWindowService
         // this.SourceInitialized += MainWindow_SourceInitialized;
         // 设置窗口启动位置
         this.Loaded += MainWindow_Loaded;
-        InitializeNetworkInterface();
-        StartMonitoring();
+        // InitializeNetworkInterface();
+        // StartMonitoring();
       
     }
     
@@ -62,16 +65,119 @@ public partial class MainWindow : IWindowService
     }
     
     
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    // private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    // {
+    //     // 获取屏幕工作区域的宽度和高度
+    //     double screenWidth = SystemParameters.WorkArea.Width;
+    //     double screenHeight = SystemParameters.WorkArea.Height;
+    //
+    //     // 设置窗口在屏幕右上角
+    //     this.Left = screenWidth/1.15;
+    //     this.Top = screenHeight/22;
+    // }
+    
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         // 获取屏幕工作区域的宽度和高度
         double screenWidth = SystemParameters.WorkArea.Width;
         double screenHeight = SystemParameters.WorkArea.Height;
 
         // 设置窗口在屏幕右上角
-        this.Left = screenWidth/1.15;
-        this.Top = screenHeight/22;
+        this.Left = screenWidth / 1.15;
+        this.Top = screenHeight / 22;
+
+        // 异步初始化网络接口和启动监控
+        await InitializeNetworkInterfaceAsync();
+        await StartMonitoringAsync();
     }
+    
+    private async Task InitializeNetworkInterfaceAsync()
+    {
+        NetworkInterface bestInterface = null;
+        long maxData = 0;
+
+        // 循环尝试，直到找到活动的网络接口
+        while (bestInterface == null)
+        {
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus == OperationalStatus.Up &&
+                    ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                {
+                    IPv4InterfaceStatistics stats = ni.GetIPv4Statistics();
+                    long totalData = stats.BytesSent + stats.BytesReceived;
+                    if (totalData > maxData)
+                    {
+                        bestInterface = ni;
+                        maxData = totalData;
+                    }
+                }
+            }
+
+            if (bestInterface != null)
+            {
+                Console.WriteLine($"Selected interface: {bestInterface.Description}");
+                break; // 成功找到，跳出循环
+            }
+            else
+            {
+                Console.WriteLine("No suitable network interface found. Waiting for an active interface.");
+                await Task.Delay(5000); // 非阻塞等待
+            }
+        }
+    }
+    
+    private NetworkInterface currentInterface;
+    private async Task StartMonitoringAsync()
+    {
+        // 首先确定要监控的网络接口
+        currentInterface = NetworkInterface.GetAllNetworkInterfaces()
+            .FirstOrDefault(ni => ni.OperationalStatus == OperationalStatus.Up &&
+                                  ni.NetworkInterfaceType != NetworkInterfaceType.Loopback);
+        if (currentInterface == null)
+        {
+            Console.WriteLine("No active network interface available for monitoring.");
+            return;
+        }
+
+        // 初始化定时器
+        timer = new DispatcherTimer();
+        timer.Interval = TimeSpan.FromSeconds(1);
+        timer.Tick += Timer_Tick;
+        timer.Start();
+    }
+
+    private void Timer_Tick(object sender, EventArgs e)
+    {
+        long bytesSent = currentInterface.GetIPv4Statistics().BytesSent;
+        long bytesReceived = currentInterface.GetIPv4Statistics().BytesReceived;
+
+        long sentSpeed = bytesSent - lastBytesSent;
+        long receivedSpeed = bytesReceived - lastBytesReceived;
+
+        lastBytesSent = bytesSent;
+        lastBytesReceived = bytesReceived;
+
+        // 此处应更新UI（回到UI线程）
+        Dispatcher.Invoke(() =>
+        {
+            // 假设存在名为uploadSpeedText和downloadSpeedText的UI元素
+            uploadSpeedText.Text = FormatSpeed(sentSpeed);
+            downloadSpeedText.Text = FormatSpeed(receivedSpeed);
+        });
+    }
+    
+    private string FormatSpeed(long speed)
+    {
+        // 格式化速度，例如转换为KB/s或MB/s
+        return $"{speed / 1024.0:F2} KB/s";
+    }
+
+
+
+    
+   
+
     
 
     // protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -128,43 +234,43 @@ public partial class MainWindow : IWindowService
         timer.Start();
     }
 
-    private void Timer_Tick(object sender, EventArgs e)
-    {
-        NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-        foreach (NetworkInterface ni in interfaces)
-        {
-            if (ni.OperationalStatus == OperationalStatus.Up &&
-                ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-            {
-                long bytesSent = ni.GetIPv4Statistics().BytesSent;
-                long bytesReceived = ni.GetIPv4Statistics().BytesReceived;
-
-                long sentSpeed = bytesSent - lastBytesSent;
-                long receivedSpeed = bytesReceived - lastBytesReceived;
-
-                lastBytesSent = bytesSent;
-                lastBytesReceived = bytesReceived;
-
-                // Update the UI
-                uploadSpeedText.Text = FormatSpeed(sentSpeed);
-                downloadSpeedText.Text = FormatSpeed(receivedSpeed);
-                break;
-            }
-        }
-    }
+    // private void Timer_Tick(object sender, EventArgs e)
+    // {
+    //     NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+    //     foreach (NetworkInterface ni in interfaces)
+    //     {
+    //         if (ni.OperationalStatus == OperationalStatus.Up &&
+    //             ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+    //         {
+    //             long bytesSent = ni.GetIPv4Statistics().BytesSent;
+    //             long bytesReceived = ni.GetIPv4Statistics().BytesReceived;
+    //
+    //             long sentSpeed = bytesSent - lastBytesSent;
+    //             long receivedSpeed = bytesReceived - lastBytesReceived;
+    //
+    //             lastBytesSent = bytesSent;
+    //             lastBytesReceived = bytesReceived;
+    //
+    //             // Update the UI
+    //             uploadSpeedText.Text = FormatSpeed(sentSpeed);
+    //             downloadSpeedText.Text = FormatSpeed(receivedSpeed);
+    //             break;
+    //         }
+    //     }
+    // }
 
 // Utility method to format speed
-    private string FormatSpeed(long speed)
-    {
-        // Convert to MB/s if the speed is more than 1 MB
-        if (speed >= 1048576)
-        {
-            return $"{(double)speed / 1048576.0:N2} MB/s";
-        }
-
-        return $"{(double)speed / 1024.0:N2} KB/s";
-    }
-    
+    // private string FormatSpeed(long speed)
+    // {
+    //     // Convert to MB/s if the speed is more than 1 MB
+    //     if (speed >= 1048576)
+    //     {
+    //         return $"{(double)speed / 1048576.0:N2} MB/s";
+    //     }
+    //
+    //     return $"{(double)speed / 1024.0:N2} KB/s";
+    // }
+    //
     
     
     private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
