@@ -3,34 +3,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
-        xmlns:local="clr-namespace:WpfApp2"
         mc:Ignorable="d"
         ShowInTaskbar="False" 
         Title="MainWindow" Height="68" Width="136"
-        WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="#FFFFFFFF"   >
+        WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True">
+    
     <WindowChrome.WindowChrome>
-        <WindowChrome CornerRadius="60" GlassFrameThickness="0" UseAeroCaptionButtons="False"
-                      RenderOptions.EdgeMode="Unspecified"
-                      RenderOptions.BitmapScalingMode="HighQuality" />
+        <WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
-    
     <Grid Background="Transparent" MouseDown="Grid_MouseDown">
-        <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
-            <!-- Upload Speed Row -->
-            <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0">  <!-- Adjusted outer margin -->
-                <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="5,0,0,0"/>
-                <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12" FontFamily="Arial" Margin="5,2,0,0"/>
+        <Border   x:Name="mainBorder" Background="{Binding BorderBackgroundColor}" CornerRadius="25" >
+            <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                <!-- Upload Speed Row -->
+                <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0">  <!-- Adjusted outer margin -->
+                    <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="5,0,0,0"/>
+                    <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12" FontFamily="Arial" Margin="5,2,0,0"/>
+                </DockPanel>
+                <!-- Download Speed Row -->
+                <DockPanel DockPanel.Dock="Top" Margin="16,10,0,0">  <!-- Adjusted outer margin -->
+                    <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="5,0,0,0"/>
+                    <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12" FontFamily="Arial" Margin="5,2,0,0"/>
+                </DockPanel>
             </DockPanel>
-            <!-- Download Speed Row -->
-            <DockPanel DockPanel.Dock="Top" Margin="16,10,0,0">  <!-- Adjusted outer margin -->
-                <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="5,0,0,0"/>
-                <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12" FontFamily="Arial" Margin="5,2,0,0"/>
-            </DockPanel>
-        </DockPanel>
+        </Border>
     </Grid>
-    
     
     
 </Window>

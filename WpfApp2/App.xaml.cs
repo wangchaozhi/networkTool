@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -76,7 +77,12 @@ public partial class App : Application
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
             {
                 bool isAutoStartEnabled = key != null && key.GetValue(appName) != null;
-                var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
+                // var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
+                // var autoStartMenu = autoStartMenu;
+                var contextMenu = notifyIcon.ContextMenu as ContextMenu;
+                var autoStartMenu = contextMenu.Items
+                    .OfType<MenuItem>()
+                    .FirstOrDefault(item => item.Header.ToString() == "开机自启");
                 autoStartMenu.IsChecked = isAutoStartEnabled;
             }
         }
@@ -131,7 +137,15 @@ public partial class App : Application
         notifyIcon = (TaskbarIcon)FindResource("MyNotifyIcon");
         notifyIcon.DataContext = viewModel;
         // 注册事件
-        var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[1] as MenuItem;
+      
+            var autoStartMenu =((ContextMenu)notifyIcon.ContextMenu).Items
+                .OfType<MenuItem>()
+                .FirstOrDefault(item => item.Header.ToString() == "开机自启");
+        
+        
+        
+        
+        // var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[1] as MenuItem;
         autoStartMenu.Checked += AutoStart_Checked;
         autoStartMenu.Unchecked += AutoStart_Unchecked;
         notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;

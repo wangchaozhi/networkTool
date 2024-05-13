@@ -12,9 +12,26 @@
                             Visibility="Visible">
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu  Opened="ContextMenu_Opened">
-                        <MenuItem Header="开机自启" IsCheckable="True" Checked="AutoStart_Checked" Unchecked="AutoStart_Unchecked" FontSize="11"/>
+                        <MenuItem Header="开机自启"  x:Name="autoStartMenu" IsCheckable="True" Checked="AutoStart_Checked" Unchecked="AutoStart_Unchecked" FontSize="11"/>
+                        <!-- <MenuItem Header="主题" FontSize="11"> -->
+                        <!--     <MenuItem Header="默认" Command="{Binding SetDefaultThemeCommand}" FontSize="11"/> -->
+                        <!--     <MenuItem Header="透明" Command="{Binding SetTransparentThemeCommand}" FontSize="11"/> -->
+                        <!-- </MenuItem> -->
+                        <MenuItem Header="主题"  FontSize="11" >
+                            <MenuItem Header="默认" IsCheckable="True" FontSize="11" 
+                                      Command="{Binding SetDefaultThemeCommand}"
+                                      IsChecked="{Binding IsDefaultThemeSelected}"/>
+                            <MenuItem Header="透明" IsCheckable="True" FontSize="11" 
+                                      Command="{Binding SetTransparentThemeCommand}"
+                                      IsChecked="{Binding IsTransparentThemeSelected}"/>
+                            <!-- <MenuItem Header="默认" Command="{Binding SetDefaultThemeCommand}" IsCheckable="True" FontSize="11"/> -->
+                            <!-- <MenuItem Header="透明" Command="{Binding SetTransparentThemeCommand}" IsCheckable="True" FontSize="11"/> -->
+                            <!-- <RadioButton GroupName="ThemeOptions" IsChecked="{Binding IsDefaultThemeSelected}" Content="默认" Command="{Binding SetDefaultThemeCommand}" FontSize="11"/> -->
+                            <!-- <RadioButton GroupName="ThemeOptions" IsChecked="{Binding IsTransparentThemeSelected}" Content="透明" Command="{Binding SetTransparentThemeCommand}" FontSize="11"/> -->
+                        </MenuItem>
                         <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="11"/>
                         <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
+                     
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>
