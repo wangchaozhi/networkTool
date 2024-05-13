@@ -6,13 +6,13 @@
         mc:Ignorable="d"
         ShowInTaskbar="False" 
         Title="MainWindow" Height="68" Width="136"
-        WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True">
+        WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True"  Cursor="Hand">
     
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" />
-    </WindowChrome.WindowChrome>
+    <!-- <WindowChrome.WindowChrome> -->
+    <!--     <WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" /> -->
+    <!-- </WindowChrome.WindowChrome> -->
 
-    <Grid Background="Transparent" MouseDown="Grid_MouseDown">
+    <Grid Background="Transparent" MouseDown="Grid_MouseDown" >
         <Border   x:Name="mainBorder" Background="{Binding BorderBackgroundColor}" CornerRadius="25" >
             <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                 <!-- Upload Speed Row -->
