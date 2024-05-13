@@ -46,29 +46,6 @@ public partial class App : Application
     static Mutex mutex = new Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");  // 使用一个唯一的标识符
     private bool hasMutex = false;  // 添加字段来跟踪互斥锁的拥有权
     
-    // private void InitializeAutoStartMenuItem()
-    // {
-    //     string appName = "MyApp";
-    //     RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false);
-    //     bool isAutoStartEnabled = key.GetValue(appName) != null;
-    //
-    //     var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
-    //     autoStartMenu.IsChecked = isAutoStartEnabled;
-    // }
-    
-    
-    // private void InitializeAutoStartMenuItem()
-    // {
-    //     string appName = "MyApp";
-    //     using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
-    //     {
-    //         bool isAutoStartEnabled = key != null && key.GetValue(appName) != null;
-    //         var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
-    //         autoStartMenu.IsChecked = isAutoStartEnabled;
-    //     }
-    // }
-    
-    
     private void InitializeAutoStartMenuItem()
     {
         string appName = "MyApp";
