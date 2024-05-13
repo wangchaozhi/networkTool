@@ -37,14 +37,7 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ExitCommand { get; private set; }
     public ICommand UpdateMessageCommand { get; }
     
-    public ICommand SetDefaultThemeCommand { get; private set; }
-    public ICommand SetTransparentThemeCommand { get; private set; }
     
-    
-    
-
-
-
     
     
     public MainViewModel(IWindowService windowService)
@@ -53,8 +46,6 @@ public class MainViewModel : INotifyPropertyChanged
         UpdateMessageCommand = new RelayCommand(UpdateMessage);
         ToggleWindowCommand = new RelayCommand(ToggleWindow);
         ExitCommand = new RelayCommand(() => System.Windows.Application.Current.Shutdown());
-        SetDefaultThemeCommand = new RelayCommand(() => SetTheme(true));
-        SetTransparentThemeCommand = new RelayCommand(() => SetTheme(false));
         Message = "Initial message";
         IsWindowVisible = true;
     }
@@ -72,24 +63,6 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
     }
-    
-    private void SetTheme(bool isDefault)
-    {
-        IsDefaultThemeSelected = isDefault;
-        IsTransparentThemeSelected = !isDefault;
-        if (isDefault)
-        {
-            SetDefaultTheme();
-        }
-        else
-        {
-            SetTransparentTheme();
-        }
-
-
-        // 实际的主题应用逻辑
-    }
-    
     
     private void ToggleWindow()
     {
@@ -116,71 +89,46 @@ public class MainViewModel : INotifyPropertyChanged
         BorderBackgroundColor = new SolidColorBrush(Color.FromArgb(0x01, 0xFF, 0xFF, 0xFF)); // 近乎透明的白色
         // 其他透明主题相关设置
     }
-
     
-    
-    private bool _isDefaultThemeSelected = true; // 假设默认主题是初始选中的
-    private bool _isTransparentThemeSelected = false;
-
-    // public bool IsDefaultThemeSelected
-    // {
-    //     get => _isDefaultThemeSelected;
-    //     set
-    //     {
-    //         if (_isDefaultThemeSelected != value)
-    //         {
-    //             _isDefaultThemeSelected = value;
-    //             OnPropertyChanged();
-    //         }
-    //     }
-    // }
-    //
-    // public bool IsTransparentThemeSelected
-    // {
-    //     get => _isTransparentThemeSelected;
-    //     set
-    //     {
-    //         if (_isTransparentThemeSelected != value)
-    //         {
-    //             _isTransparentThemeSelected = value;
-    //             OnPropertyChanged();
-    //         }
-    //     }
-    // }
-    //
-    public bool IsDefaultThemeSelected
+    private void SetWheatTheme()
     {
-        get => _isDefaultThemeSelected;
+        BorderBackgroundColor = new SolidColorBrush(Colors.Wheat); 
+        // 其他透明主题相关设置
+    }
+    
+    private Theme _selectedTheme = Theme.Default;  // 默认选中的主题
+
+    public Theme SelectedTheme
+    {
+        get => _selectedTheme;
         set
         {
-            if (_isDefaultThemeSelected != value)
+            if (_selectedTheme != value)
             {
-                _isDefaultThemeSelected = value;
-                IsTransparentThemeSelected = !value; // 自动反转另一个选项
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsTransparentThemeSelected));
+                _selectedTheme = value;
+                NotifyPropertyChanged(nameof(SelectedTheme));
+                UpdateTheme(value);  // 更新主题的方法
             }
         }
     }
 
-    public bool IsTransparentThemeSelected
+    private void UpdateTheme(Theme theme)
     {
-        get => _isTransparentThemeSelected;
-        set
+        switch (theme)
         {
-            if (_isTransparentThemeSelected != value)
-            {
-                _isTransparentThemeSelected = value;
-                IsDefaultThemeSelected = !value; // 自动反转另一个选项
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsDefaultThemeSelected));
-            }
+            case Theme.Default:
+                SetDefaultTheme();
+                break;
+            case Theme.Transparent:
+                SetTransparentTheme();
+                break;
+            case Theme.Wheat:
+                SetWheatTheme();
+                break;
+            // 添加其他主题的处理逻辑
         }
     }
 
-
-    
-    
     
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -191,13 +139,14 @@ public class MainViewModel : INotifyPropertyChanged
             CommandManager.InvalidateRequerySuggested();
     }
     
-
-    private void OpenWindow()
+    protected virtual void NotifyPropertyChanged(params string[] propertyNames)
     {
-        IsWindowVisible = true;
-        windowService.ShowWindow();
+        foreach (var propertyName in propertyNames)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
-
+    
     private void UpdateMessage()
     {
         Message = "Message updated at " + DateTime.Now.ToString("T");

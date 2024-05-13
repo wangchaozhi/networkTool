@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:WpfApp2"
              xmlns:tb="http://www.hardcodet.net/taskbar"
+
             >
     <Application.Resources>
         <ResourceDictionary>
+        <local:ThemeToBooleanConverter x:Key="ThemeConverter"/>
             <tb:TaskbarIcon x:Key="MyNotifyIcon"
                             IconSource="pack://application:,,,/res/icon.ico"
                             ToolTipText="我的应用"
@@ -18,16 +20,15 @@
                         <!--     <MenuItem Header="透明" Command="{Binding SetTransparentThemeCommand}" FontSize="11"/> -->
                         <!-- </MenuItem> -->
                         <MenuItem Header="主题"  FontSize="11" >
-                            <MenuItem Header="默认" IsCheckable="True" FontSize="11" 
+                            <MenuItem Header="默认" IsCheckable="True" FontSize="11"
                                       Command="{Binding SetDefaultThemeCommand}"
-                                      IsChecked="{Binding IsDefaultThemeSelected}"/>
-                            <MenuItem Header="透明" IsCheckable="True" FontSize="11" 
+                                      IsChecked="{Binding SelectedTheme, Converter={StaticResource ThemeConverter}, ConverterParameter={x:Static local:Theme.Default}}"/>
+                            <MenuItem Header="透明" IsCheckable="True" FontSize="11"
                                       Command="{Binding SetTransparentThemeCommand}"
-                                      IsChecked="{Binding IsTransparentThemeSelected}"/>
-                            <!-- <MenuItem Header="默认" Command="{Binding SetDefaultThemeCommand}" IsCheckable="True" FontSize="11"/> -->
-                            <!-- <MenuItem Header="透明" Command="{Binding SetTransparentThemeCommand}" IsCheckable="True" FontSize="11"/> -->
-                            <!-- <RadioButton GroupName="ThemeOptions" IsChecked="{Binding IsDefaultThemeSelected}" Content="默认" Command="{Binding SetDefaultThemeCommand}" FontSize="11"/> -->
-                            <!-- <RadioButton GroupName="ThemeOptions" IsChecked="{Binding IsTransparentThemeSelected}" Content="透明" Command="{Binding SetTransparentThemeCommand}" FontSize="11"/> -->
+                                      IsChecked="{Binding SelectedTheme, Converter={StaticResource ThemeConverter}, ConverterParameter={x:Static local:Theme.Transparent}}"/>
+                            <MenuItem Header="小麦色" IsCheckable="True" FontSize="11"
+                                      Command="{Binding SetWheatThemeCommand}" 
+                                      IsChecked="{Binding SelectedTheme, Converter={StaticResource ThemeConverter}, ConverterParameter={x:Static local:Theme.Wheat}}"/>
                         </MenuItem>
                         <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="11"/>
                         <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
