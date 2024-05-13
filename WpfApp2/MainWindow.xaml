@@ -18,12 +18,12 @@
                 <!-- Upload Speed Row -->
                 <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0">  <!-- Adjusted outer margin -->
                     <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="5,0,0,0"/>
-                    <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12" FontFamily="Arial" Margin="5,2,0,0"/>
+                    <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
                 <!-- Download Speed Row -->
                 <DockPanel DockPanel.Dock="Top" Margin="16,10,0,0">  <!-- Adjusted outer margin -->
                     <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="5,0,0,0"/>
-                    <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12" FontFamily="Arial" Margin="5,2,0,0"/>
+                    <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
             </DockPanel>
         </Border>

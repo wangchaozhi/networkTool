@@ -78,6 +78,7 @@ public class MainViewModel : INotifyPropertyChanged
     
     
     
+    
     private void SetDefaultTheme()
     {
         BorderBackgroundColor = new SolidColorBrush(Colors.White); // 默认主题背景色
@@ -111,6 +112,10 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
     }
+    
+    
+    
+    
 
     private void UpdateTheme(Theme theme)
     {
@@ -128,6 +133,86 @@ public class MainViewModel : INotifyPropertyChanged
             // 添加其他主题的处理逻辑
         }
     }
+    
+    
+    
+    
+    private FontFamily _fontFamily = new FontFamily("Arial");
+    public FontFamily FontFamily
+    {
+        get => _fontFamily;
+        set
+        {
+            if (_fontFamily != value)
+            {
+                _fontFamily = value;
+                NotifyPropertyChanged(nameof(FontFamily));
+            }
+        }
+    }
+    
+ 
+    
+    private FontStyleType _currentFontStyle = FontStyleType.Arial; // 默认值
+    public FontStyleType CurrentFontStyle
+    {
+        get => _currentFontStyle;
+        set
+        {
+            if (_currentFontStyle != value)
+            {
+                _currentFontStyle = value;
+                NotifyPropertyChanged(nameof(CurrentFontStyle));
+                UpdateFontStyle(value);  // 直接更新字体样式
+            }
+        }
+    }
+
+    // private void UpdateFontStyle(FontStyleType fontStyle)
+    // {
+    //     // 这里根据 fontStyle 来设置不同的字体样式
+    //     // 例如, 更新一些视觉元素的 FontFamily 属性
+    //     switch (fontStyle)
+    //     {
+    //         case FontStyleType.Arial:
+    //             // 设置为 Arial
+    //             break;
+    //         case FontStyleType.TimesNewRoman:
+    //             // 设置为 Times New Roman
+    //             break;
+    //         case FontStyleType.Verdana:
+    //             // 设置为 Verdana
+    //             break;
+    //     }
+    // }
+    
+    
+    private void UpdateFontStyle(FontStyleType fontStyle)
+    {
+        switch (fontStyle)
+        {
+            case FontStyleType.Arial:
+                FontFamily = new FontFamily("Arial");
+                break;
+            case FontStyleType.TimesNewRoman:
+                FontFamily = new FontFamily("Times New Roman");
+                break;
+            case FontStyleType.楷体:
+                FontFamily = new FontFamily("楷体");
+                break;
+            case FontStyleType.宋体:
+                FontFamily = new FontFamily("宋体");
+                break; 
+            case FontStyleType.黑体:
+                FontFamily = new FontFamily("黑体");
+                break;
+            // 添加其他字体样式的处理逻辑
+        }
+    }
+
+
+    
+    
 
     
     public event PropertyChangedEventHandler PropertyChanged;

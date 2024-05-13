@@ -7,6 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
         <local:ThemeToBooleanConverter x:Key="ThemeConverter"/>
+        <local:FontStyleToBooleanConverter x:Key="FontStyleConverter"/>
             <tb:TaskbarIcon x:Key="MyNotifyIcon"
                             IconSource="pack://application:,,,/res/icon.ico"
                             ToolTipText="我的应用"
@@ -24,6 +25,29 @@
                             <MenuItem Header="小麦色" IsCheckable="True" FontSize="11"
                                       Command="{Binding SetWheatThemeCommand}" 
                                       IsChecked="{Binding SelectedTheme, Converter={StaticResource ThemeConverter}, ConverterParameter={x:Static local:Theme.Wheat}}"/>
+                        </MenuItem>
+                        <MenuItem Header="字体">
+                            <MenuItem Header="Arial" IsCheckable="True"
+                                      IsChecked="{Binding CurrentFontStyle, Converter={StaticResource FontStyleConverter}, ConverterParameter={x:Static local:FontStyleType.Arial}}"
+                                      Command="{Binding SetCurrentFontStyleCommand}"
+                                      CommandParameter="{x:Static local:FontStyleType.Arial}"/>
+                            <MenuItem Header="Times New Roman" IsCheckable="True"
+                                      IsChecked="{Binding CurrentFontStyle, Converter={StaticResource FontStyleConverter}, ConverterParameter={x:Static local:FontStyleType.TimesNewRoman}}"
+                                      Command="{Binding SetCurrentFontStyleCommand}"
+                                      CommandParameter="{x:Static local:FontStyleType.TimesNewRoman}"/>
+                            <MenuItem Header="楷体" IsCheckable="True"
+                                      IsChecked="{Binding CurrentFontStyle, Converter={StaticResource FontStyleConverter}, ConverterParameter={x:Static local:FontStyleType.楷体}}"
+                                      Command="{Binding SetCurrentFontStyleCommand}"
+                                      CommandParameter="{x:Static local:FontStyleType.楷体}"/>
+                            <MenuItem Header="宋体" IsCheckable="True"
+                                      IsChecked="{Binding CurrentFontStyle, Converter={StaticResource FontStyleConverter}, ConverterParameter={x:Static local:FontStyleType.宋体}}"
+                                      Command="{Binding SetCurrentFontStyleCommand}"
+                                      CommandParameter="{x:Static local:FontStyleType.宋体}"/>
+                            <MenuItem Header="黑体" IsCheckable="True"
+                                      IsChecked="{Binding CurrentFontStyle, Converter={StaticResource FontStyleConverter}, ConverterParameter={x:Static local:FontStyleType.黑体}}"
+                                      Command="{Binding SetCurrentFontStyleCommand}"
+                                      CommandParameter="{x:Static local:FontStyleType.黑体}"/>
+                            <!-- 其他字体选项 -->
                         </MenuItem>
                         <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="11"/>
                         <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
