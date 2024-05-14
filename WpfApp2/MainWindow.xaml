@@ -32,7 +32,7 @@
             
             
         </Border>
-        <Label  Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}" VerticalAlignment="Bottom" Visibility="{Binding LabelVisibility}" FontSize="7"  Margin="56,0,0,0"/>
+        <Label  Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}" VerticalAlignment="Bottom" Visibility="{Binding LabelVisibility}" FontSize="7"  Margin="60,0,0,0"/>
     </Grid>
 
     
