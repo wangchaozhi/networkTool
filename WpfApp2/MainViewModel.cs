@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using WpfApp2;
 
 public class MainViewModel : INotifyPropertyChanged
@@ -48,7 +50,19 @@ public class MainViewModel : INotifyPropertyChanged
         ExitCommand = new RelayCommand(() => System.Windows.Application.Current.Shutdown());
         Message = "Initial message";
         IsWindowVisible = true;
+        // 初始化定时器
+        _visibilityTimer = new DispatcherTimer();
+        _visibilityTimer.Interval = TimeSpan.FromSeconds(1);
+        _visibilityTimer.Tick += VisibilityTimer_Tick;
+        // ShowLabelWithDelay();
     }
+    
+    // private async Task ShowLabelWithDelay()
+    // {
+    //     LabelVisibility = Visibility.Visible;
+    //     await Task.Delay(2000); // 等待2秒
+    //     LabelVisibility = Visibility.Collapsed;
+    // }
     
     
     public SolidColorBrush BorderBackgroundColor
@@ -209,7 +223,65 @@ public class MainViewModel : INotifyPropertyChanged
             // 添加其他字体样式的处理逻辑
         }
     }
+    
+    
+    //
+    // private double _cornerRadiusValue = 25; // 默认值
+    //
+    // public double CornerRadiusValue
+    // {
+    //     get { return _cornerRadiusValue; }
+    //     set 
+    //     { 
+    //         if (_cornerRadiusValue != value)
+    //         {
+    //             _cornerRadiusValue = value;
+    //             OnPropertyChanged(nameof(CornerRadiusValue));
+    //         }
+    //     }
+    // }
+    
+    
+    private int _cornerRadiusValue = 25;
+    private Visibility _labelVisibility = Visibility.Collapsed;
+    private DispatcherTimer _visibilityTimer;
+    
+    
+    public int CornerRadiusValue
+    {
+        get { return _cornerRadiusValue; }
+        set
+        {
+            if (_cornerRadiusValue != value)
+            {
+                _cornerRadiusValue = value;
+                OnPropertyChanged(nameof(CornerRadiusValue));
+                LabelVisibility = Visibility.Visible; // 显示标签
+                _visibilityTimer.Stop(); // 停止前一个定时器
+                _visibilityTimer.Start(); // 开始定时器，准备隐藏标签
+            }
+        }
+    }
 
+    public Visibility LabelVisibility
+    {
+        get { return _labelVisibility; }
+        set
+        {
+            if (_labelVisibility != value)
+            {
+                _labelVisibility = value;
+                OnPropertyChanged(nameof(LabelVisibility));
+            }
+        }
+    }
+
+    private void VisibilityTimer_Tick(object sender, EventArgs e)
+    {
+        LabelVisibility = Visibility.Collapsed; // 隐藏标签
+        _visibilityTimer.Stop();
+    }
+    
 
     
     

@@ -13,21 +13,37 @@
     <!-- </WindowChrome.WindowChrome> -->
 
     <Grid Background="Transparent" MouseDown="Grid_MouseDown" >
-        <Border   x:Name="mainBorder" Background="{Binding BorderBackgroundColor}" CornerRadius="25" >
+            
+        <Border   x:Name="mainBorder" Background="{Binding BorderBackgroundColor}"  CornerRadius="{Binding CornerRadiusValue}" >
             <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                 <!-- Upload Speed Row -->
                 <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0">  <!-- Adjusted outer margin -->
                     <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="5,0,0,0"/>
                     <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
+                
                 <!-- Download Speed Row -->
                 <DockPanel DockPanel.Dock="Top" Margin="16,10,0,0">  <!-- Adjusted outer margin -->
                     <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="5,0,0,0"/>
                     <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
+              
             </DockPanel>
+            
+            
         </Border>
+        <!-- <Slider Minimum="1" Maximum="100" Value="{Binding CornerRadiusValue, Mode=TwoWay}" -->
+        <!--         TickFrequency="1" IsSnapToTickEnabled="True" -->
+        <!--         ToolTip="{Binding CornerRadiusValue, StringFormat='CornerRadius: {0:F0}'}"/> -->
+       
+        <!-- <StackPanel Orientation="Vertical"> -->
+     
+        <!--     <Label Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}"/> -->
+        <!-- -->
+        <!-- </StackPanel> -->
+        <Label  Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}" VerticalAlignment="Bottom" Visibility="{Binding LabelVisibility}" FontSize="7"  Margin="56,0,0,0"/>
     </Grid>
+
     
     
 </Window>

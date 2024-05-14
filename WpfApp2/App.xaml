@@ -11,7 +11,7 @@
             <tb:TaskbarIcon x:Key="MyNotifyIcon"
                             IconSource="pack://application:,,,/res/icon.ico"
                             ToolTipText="我的应用"
-                            Visibility="Visible">
+                            Visibility="Visible" >
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu  Opened="ContextMenu_Opened">
                         <MenuItem Header="开机自启"  x:Name="autoStartMenu" IsCheckable="True" Checked="AutoStart_Checked" Unchecked="AutoStart_Unchecked" FontSize="11"/>
@@ -50,6 +50,11 @@
                             <!-- 其他字体选项 -->
                         </MenuItem>
                         <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="11"/>
+                        <MenuItem Header="圆角调整滑块" Foreground="Gray" >
+                            <MenuItem.Icon>
+                                <local:SliderControl CornerRadiusValue="{Binding CornerRadiusValue, Mode=TwoWay}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
                      
                     </ContextMenu>
