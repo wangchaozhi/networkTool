@@ -14,7 +14,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 
 namespace WpfApp2;
 
-public partial class MainWindow : IWindowService
+public partial class MainWindow 
 {
     private long lastBytesSent = 0;
     private long lastBytesReceived = 0;

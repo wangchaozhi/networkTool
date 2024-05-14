@@ -181,26 +181,6 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
     }
-
-    // private void UpdateFontStyle(FontStyleType fontStyle)
-    // {
-    //     // 这里根据 fontStyle 来设置不同的字体样式
-    //     // 例如, 更新一些视觉元素的 FontFamily 属性
-    //     switch (fontStyle)
-    //     {
-    //         case FontStyleType.Arial:
-    //             // 设置为 Arial
-    //             break;
-    //         case FontStyleType.TimesNewRoman:
-    //             // 设置为 Times New Roman
-    //             break;
-    //         case FontStyleType.Verdana:
-    //             // 设置为 Verdana
-    //             break;
-    //     }
-    // }
-    
-    
     private void UpdateFontStyle(FontStyleType fontStyle)
     {
         switch (fontStyle)
@@ -224,22 +204,37 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
     
+    private double _currentScale = 1.0; // 默认缩放比例为1倍
     
-    //
-    // private double _cornerRadiusValue = 25; // 默认值
-    //
-    // public double CornerRadiusValue
-    // {
-    //     get { return _cornerRadiusValue; }
-    //     set 
-    //     { 
-    //         if (_cornerRadiusValue != value)
-    //         {
-    //             _cornerRadiusValue = value;
-    //             OnPropertyChanged(nameof(CornerRadiusValue));
-    //         }
-    //     }
-    // }
+    public double CurrentScale
+    {
+        get => _currentScale;
+        set
+        {
+            if (_currentScale != value)
+            {
+                _currentScale = value;
+                NotifyPropertyChanged(nameof(CurrentScale));
+                UpdateScale(value);  // Correctly calls UpdateScale without recursion
+            }
+        }
+    }
+    private readonly double baseWidth = 136; // 初始窗口宽度
+    private readonly double baseHeight = 68; // 初始窗口高度
+
+    private void UpdateScale(double scale)
+    {
+        // 根据缩放比例调整窗口的宽度和高度
+        double newWidth = baseWidth * scale;
+        double newHeight = baseHeight * scale;
+
+        // 使用 WindowService 调整窗口尺寸
+        windowService.ResizeWindow(newWidth, newHeight);
+        // 更新 ViewModel 中的缩放比例，如果需要通知UI变化
+        CurrentScale = scale;
+    }
+
+    
     
     
     private int _cornerRadiusValue = 25;

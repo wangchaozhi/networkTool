@@ -8,12 +8,12 @@
         Title="MainWindow" Height="68" Width="136"
         WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True"  Cursor="Hand">
     
-    <!-- <WindowChrome.WindowChrome> -->
-    <!--     <WindowChrome GlassFrameThickness="0" UseAeroCaptionButtons="False" /> -->
-    <!-- </WindowChrome.WindowChrome> -->
-
     <Grid Background="Transparent" MouseDown="Grid_MouseDown" >
-            
+        <Grid.LayoutTransform>
+            <ScaleTransform x:Name="scaleTransform"  ScaleX="{Binding CurrentScale}" 
+                            ScaleY="{Binding CurrentScale}"/>
+        </Grid.LayoutTransform>
+        
         <Border   x:Name="mainBorder" Background="{Binding BorderBackgroundColor}"  CornerRadius="{Binding CornerRadiusValue}" >
             <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                 <!-- Upload Speed Row -->
@@ -32,15 +32,6 @@
             
             
         </Border>
-        <!-- <Slider Minimum="1" Maximum="100" Value="{Binding CornerRadiusValue, Mode=TwoWay}" -->
-        <!--         TickFrequency="1" IsSnapToTickEnabled="True" -->
-        <!--         ToolTip="{Binding CornerRadiusValue, StringFormat='CornerRadius: {0:F0}'}"/> -->
-       
-        <!-- <StackPanel Orientation="Vertical"> -->
-     
-        <!--     <Label Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}"/> -->
-        <!-- -->
-        <!-- </StackPanel> -->
         <Label  Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}" VerticalAlignment="Bottom" Visibility="{Binding LabelVisibility}" FontSize="7"  Margin="56,0,0,0"/>
     </Grid>
 

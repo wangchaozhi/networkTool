@@ -8,6 +8,7 @@
         <ResourceDictionary>
         <local:ThemeToBooleanConverter x:Key="ThemeConverter"/>
         <local:FontStyleToBooleanConverter x:Key="FontStyleConverter"/>
+        <local:ScaleToBooleanConverter x:Key="ScaleConverter"/>
             <tb:TaskbarIcon x:Key="MyNotifyIcon"
                             IconSource="pack://application:,,,/res/icon.ico"
                             ToolTipText="我的应用"
@@ -48,6 +49,19 @@
                                       Command="{Binding SetCurrentFontStyleCommand}"
                                       CommandParameter="{x:Static local:FontStyleType.黑体}"/>
                             <!-- 其他字体选项 -->
+                        </MenuItem>
+                        <MenuItem Header="缩放">
+                            <MenuItem Header="0.6x" IsCheckable="True" IsChecked="{Binding CurrentScale, Converter={StaticResource ScaleConverter}, ConverterParameter=0.6}"
+                                      Command="{Binding SetCurrentScaleCommand}" CommandParameter="0.6"/>
+                            <MenuItem Header="0.8x" IsCheckable="True" IsChecked="{Binding CurrentScale, Converter={StaticResource ScaleConverter}, ConverterParameter=0.8}"
+                                      Command="{Binding SetCurrentScaleCommand}" CommandParameter="0.8"/>
+                            <MenuItem Header="1x" IsCheckable="True" IsChecked="{Binding CurrentScale, Converter={StaticResource ScaleConverter}, ConverterParameter=1}"
+                                      Command="{Binding SetCurrentScaleCommand}" CommandParameter="1"/>
+                            <MenuItem Header="2x" IsCheckable="True" IsChecked="{Binding CurrentScale, Converter={StaticResource ScaleConverter}, ConverterParameter=2}"
+                                      Command="{Binding SetCurrentScaleCommand}" CommandParameter="2"/>
+                            <MenuItem Header="3x" IsCheckable="True" IsChecked="{Binding CurrentScale, Converter={StaticResource ScaleConverter}, ConverterParameter=3}"
+                                      Command="{Binding SetCurrentScaleCommand}" CommandParameter="3"/>
+                            <!-- 其他倍数选项 -->
                         </MenuItem>
                         <MenuItem Header="{Binding WindowVisibilityText}" Command="{Binding ToggleWindowCommand}" FontSize="11"/>
                         <MenuItem Header="圆角调整滑块" Foreground="Gray" >

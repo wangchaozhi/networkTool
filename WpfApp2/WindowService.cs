@@ -18,4 +18,10 @@ public class WindowService : IWindowService
     {
         mainWindow.Hide();
     }
+
+    public void ResizeWindow(double width, double height)
+    {
+        mainWindow.Width = width;
+        mainWindow.Height = height;
+    }
 }
