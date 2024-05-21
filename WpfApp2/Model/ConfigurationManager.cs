@@ -7,7 +7,6 @@ public class ConfigurationManager
     private readonly string _jsonFilePath;
     private JObject _settings;
 
-    
     public ConfigurationManager(string jsonFilePath)
     {
         _jsonFilePath = jsonFilePath;
@@ -26,26 +25,22 @@ public class ConfigurationManager
         }
     }
 
-
-   
-    
     public void SetSetting<T>(string settingName, T value)
     {
-        _settings["Settings"][settingName] = value.ToString();
+        _settings["Settings"][settingName] = JToken.FromObject(value);
         SaveSettings();
     }
 
-    
     public T GetSetting<T>(string settingName)
     {
         var settingValue = _settings["Settings"][settingName];
         if (settingValue != null)
         {
-            return (T)Convert.ChangeType(settingValue, typeof(T));
+            // 使用 ToObject<T>() 来转换 JSON 数据到指定类型
+            return settingValue.ToObject<T>();
         }
-        return default(T);  // 返回类型的默认值，例如对于int是0，对于bool是false等
+        return default(T);  // 返回类型的默认值，例如对于 int 是 0，对于 bool 是 false 等
     }
-
 
     private void SaveSettings()
     {
@@ -53,3 +48,4 @@ public class ConfigurationManager
         File.WriteAllText(_jsonFilePath, json);
     }
 }
+
