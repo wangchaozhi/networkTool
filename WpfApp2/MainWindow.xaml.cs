@@ -23,10 +23,12 @@ public partial class MainWindow
     private TaskbarIcon notifyIcon;
     // public ICommand OpenCommand { get; private set; }
     // public ICommand ExitCommand { get; private set; }
-
+    private TaiChiWindow taiChiWindow;
     public MainWindow()
     {
         InitializeComponent();
+        // taiChiWindow = new TaiChiWindow();
+        // taiChiWindow.Show();
         // GlassWindowManager.EnableGlassEffect(this);
         // 注册窗体关闭事件以清理资源
         // this.Closed += MainWindow_Closed;
@@ -45,6 +47,38 @@ public partial class MainWindow
         NetworkChange.NetworkAvailabilityChanged -= NetworkAvailabilityChanged;
         this.Closed -= MainWindow_Closed;
     }
+    
+    
+    // protected override void OnLocationChanged(EventArgs e)
+    // {
+    //     base.OnLocationChanged(e);
+    //     if (taiChiWindow != null)
+    //     {
+    //         taiChiWindow.Left = this.Left;
+    //         taiChiWindow.Top = this.Top;
+    //     }
+    // }
+    //
+    
+    // protected override void OnLocationChanged(EventArgs e)
+    // {
+    //     base.OnLocationChanged(e);
+    //     if (taiChiWindow != null)
+    //     {
+    //         // 确保获取正确的宽度，特别是如果 TaiChiWindow 还未完全加载
+    //         double taiChiWidth = taiChiWindow.Width*0.2;
+    //         // // 确保获取正确的宽度，特别是如果 TaiChiWindow 还未完全加载
+    //         double taiChiHeight = taiChiWindow.Height*0.2;
+    //         // if (taiChiHeight == 0) {
+    //         //     taiChiHeight = taiChiWindow.Height;
+    //         // }
+    //
+    //         // 设置 TaiChiWindow 的左边缘，使其中心对齐 MainWindow 的左边缘
+    //         taiChiWindow.Left = this.Left - taiChiWidth / 2;
+    //         taiChiWindow.Top = this.Top;
+    //     }
+    // }
+
 
     private void MainWindow_SourceInitialized(object sender, EventArgs e)
     {
@@ -233,6 +267,14 @@ public partial class MainWindow
 
         long sentSpeed = bytesSent - lastBytesSent;
         long receivedSpeed = bytesReceived - lastBytesReceived;
+        
+        // 检查是否有接口切换或计数器回绕
+        if (sentSpeed < 0 || receivedSpeed < 0)
+        {
+            // 可能是接口切换或计数器回绕，重新初始化速度统计
+            sentSpeed = 0;
+            receivedSpeed = 0;
+        }
 
         lastBytesSent = bytesSent;
         lastBytesReceived = bytesReceived;

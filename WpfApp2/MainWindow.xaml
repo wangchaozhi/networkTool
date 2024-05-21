@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpfApp2="clr-namespace:WpfApp2"
         mc:Ignorable="d"
         ShowInTaskbar="False" 
         Title="MainWindow" Height="68" Width="136"
@@ -29,8 +30,6 @@
                 </DockPanel>
               
             </DockPanel>
-            
-            
         </Border>
         <Label  Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}" VerticalAlignment="Bottom" Visibility="{Binding LabelVisibility}" FontSize="7"  Margin="60,0,0,0"/>
     </Grid>
