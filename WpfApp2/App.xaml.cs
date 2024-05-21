@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -107,7 +108,15 @@ public partial class App : Application
         MainWindow = mainWindow;
 
         var windowService = new WindowService(mainWindow);
-        var configurationManager = new ConfigurationManager("config.json");
+        string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string appDirectory = Path.Combine(appDataPath, "MyApp");
+        string jsonFilePath = Path.Combine(appDirectory, "config.json");
+
+        if (!Directory.Exists(appDirectory))
+        {
+            Directory.CreateDirectory(appDirectory);
+        }
+        var configurationManager = new ConfigurationManager(jsonFilePath);
         var viewModel = new MainViewModel(windowService,configurationManager);
     
         MainWindow.DataContext = viewModel;
