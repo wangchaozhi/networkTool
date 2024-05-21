@@ -49,22 +49,20 @@ public class MainViewModel : INotifyPropertyChanged
     {
         this.windowService = windowService;
         _configManager = configManager;
-        var fontStyleSetting = _configManager.GetSetting("FontStyle");
+        var fontStyleSetting = _configManager.GetSetting<string>("FontStyle");
         CurrentFontStyle = FontStyleTypeExtensions.ParseFromString(fontStyleSetting);
         
         
         // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
-        var themeSetting = _configManager.GetSetting("Theme");
+        var themeSetting = _configManager.GetSetting<string>("Theme");
         SelectedTheme = ThemeExtensions.ParseFromString(themeSetting);
         
         
         
         // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
-        var scaleSetting = _configManager.GetSetting("Scale");
-        if (double.TryParse(scaleSetting, NumberStyles.Float, CultureInfo.InvariantCulture, out double scale))
-        {
-            CurrentScale = Math.Round(scale, 1);
-        }
+        var scaleSetting = _configManager.GetSetting<double>("Scale");
+        CurrentScale = scaleSetting;
+    
 
         
         UpdateMessageCommand = new RelayCommand(UpdateMessage);
@@ -168,7 +166,7 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
             // 添加其他主题的处理逻辑
         }
-        _configManager.SetSetting("Theme", theme.ToString());
+        _configManager.SetSetting<string>("Theme", theme.ToString());
     }
     
     
@@ -227,7 +225,7 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
             // 添加其他字体样式的处理逻辑
         }
-        _configManager.SetSetting("FontStyle", fontStyle.ToString());
+        _configManager.SetSetting<string>("FontStyle", fontStyle.ToString());
        
     }
     
@@ -259,7 +257,7 @@ public class MainViewModel : INotifyPropertyChanged
         windowService.ResizeWindow(newWidth, newHeight);
         // 更新 ViewModel 中的缩放比例，如果需要通知UI变化
         CurrentScale = scale;
-        _configManager.SetSetting("Scale",scale.ToString("F1") );
+        _configManager.SetSetting<double>("Scale",scale );
     }
 
     

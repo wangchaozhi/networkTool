@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using System.IO;
 
 public class ConfigurationManager
@@ -20,22 +21,31 @@ public class ConfigurationManager
         {
             // 如果文件不存在，创建一个新的 JObject 并设置默认值
             _settings = new JObject();
-            _settings["Settings"] = JObject.FromObject(new { Theme = "Default", FontStyle = "Arial" });
+            _settings["Settings"] = JObject.FromObject(new { Theme = "Default", FontStyle = "Arial",Scale="1.0" });
             SaveSettings();
         }
     }
 
 
-    public string GetSetting(string settingName)
+   
+    
+    public void SetSetting<T>(string settingName, T value)
     {
-        return _settings["Settings"][settingName]?.ToString();
-    }
-
-    public void SetSetting(string settingName, string value)
-    {
-        _settings["Settings"][settingName] = value;
+        _settings["Settings"][settingName] = value.ToString();
         SaveSettings();
     }
+
+    
+    public T GetSetting<T>(string settingName)
+    {
+        var settingValue = _settings["Settings"][settingName];
+        if (settingValue != null)
+        {
+            return (T)Convert.ChangeType(settingValue, typeof(T));
+        }
+        return default(T);  // 返回类型的默认值，例如对于int是0，对于bool是false等
+    }
+
 
     private void SaveSettings()
     {
