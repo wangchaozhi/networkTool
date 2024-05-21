@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,11 +9,13 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using WpfApp2;
 
+
 public class MainViewModel : INotifyPropertyChanged
 {
     private bool _isWindowVisible;
     private string _message;
     private SolidColorBrush _borderBackgroundColor = new SolidColorBrush(Colors.White); // 默认背景色
+    private readonly ConfigurationManager _configManager;
     
     
 
@@ -42,9 +45,28 @@ public class MainViewModel : INotifyPropertyChanged
     
     
     
-    public MainViewModel(IWindowService windowService)
+    public MainViewModel(IWindowService windowService,ConfigurationManager configManager)
     {
         this.windowService = windowService;
+        _configManager = configManager;
+        var fontStyleSetting = _configManager.GetSetting("FontStyle");
+        CurrentFontStyle = FontStyleTypeExtensions.ParseFromString(fontStyleSetting);
+        
+        
+        // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
+        var themeSetting = _configManager.GetSetting("Theme");
+        SelectedTheme = ThemeExtensions.ParseFromString(themeSetting);
+        
+        
+        
+        // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
+        var scaleSetting = _configManager.GetSetting("Scale");
+        if (double.TryParse(scaleSetting, NumberStyles.Float, CultureInfo.InvariantCulture, out double scale))
+        {
+            CurrentScale = Math.Round(scale, 1);
+        }
+
+        
         UpdateMessageCommand = new RelayCommand(UpdateMessage);
         ToggleWindowCommand = new RelayCommand(ToggleWindow);
         ExitCommand = new RelayCommand(() => System.Windows.Application.Current.Shutdown());
@@ -146,6 +168,7 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
             // 添加其他主题的处理逻辑
         }
+        _configManager.SetSetting("Theme", theme.ToString());
     }
     
     
@@ -165,9 +188,10 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
     
- 
+   
     
     private FontStyleType _currentFontStyle = FontStyleType.Arial; // 默认值
+    
     public FontStyleType CurrentFontStyle
     {
         get => _currentFontStyle;
@@ -181,6 +205,7 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
     }
+    
     private void UpdateFontStyle(FontStyleType fontStyle)
     {
         switch (fontStyle)
@@ -202,6 +227,8 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
             // 添加其他字体样式的处理逻辑
         }
+        _configManager.SetSetting("FontStyle", fontStyle.ToString());
+       
     }
     
     private double _currentScale = 1.0; // 默认缩放比例为1倍
@@ -232,6 +259,7 @@ public class MainViewModel : INotifyPropertyChanged
         windowService.ResizeWindow(newWidth, newHeight);
         // 更新 ViewModel 中的缩放比例，如果需要通知UI变化
         CurrentScale = scale;
+        _configManager.SetSetting("Scale",scale.ToString("F1") );
     }
 
     

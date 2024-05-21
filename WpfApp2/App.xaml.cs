@@ -107,7 +107,8 @@ public partial class App : Application
         MainWindow = mainWindow;
 
         var windowService = new WindowService(mainWindow);
-        var viewModel = new MainViewModel(windowService);
+        var configurationManager = new ConfigurationManager("config.json");
+        var viewModel = new MainViewModel(windowService,configurationManager);
     
         MainWindow.DataContext = viewModel;
 
