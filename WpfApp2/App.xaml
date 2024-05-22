@@ -69,8 +69,9 @@
                                 <local:SliderControl CornerRadiusValue="{Binding CornerRadiusValue, Mode=TwoWay}"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="更新"  Click="Update_Click">
+                        </MenuItem>
                         <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
-                     
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>

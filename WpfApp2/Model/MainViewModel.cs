@@ -10,13 +10,14 @@ using System.Windows.Threading;
 using WpfApp2;
 
 
-public class MainViewModel : INotifyPropertyChanged
+public class  MainViewModel : INotifyPropertyChanged
 {
     private bool _isWindowVisible;
     private string _message;
     private SolidColorBrush _borderBackgroundColor = new SolidColorBrush(Colors.White); // 默认背景色
-    private readonly ConfigurationManager _configManager;
-    
+    // public static ConfigurationManager _configManager;
+    public static  ConfigurationManager _configManager;
+
     
 
     private  readonly IWindowService windowService;
@@ -42,7 +43,15 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ExitCommand { get; private set; }
     public ICommand UpdateMessageCommand { get; }
     
-    
+    // static MainViewModel()
+    // {
+    //     Console.Write("123");
+    //     // 这里可以进行静态字段的初始化操作
+    //     // MyStaticField = 42;
+    //
+    //     // 这里还可以执行其他的静态初始化操作
+    //     // 例如，连接到数据库，加载配置文件等
+    // }
     
     
     public MainViewModel(IWindowService windowService,ConfigurationManager configManager)
@@ -62,8 +71,6 @@ public class MainViewModel : INotifyPropertyChanged
         // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
         var scaleSetting = _configManager.GetSetting<double>("Scale");
         CurrentScale = scaleSetting;
-    
-
         
         UpdateMessageCommand = new RelayCommand(UpdateMessage);
         ToggleWindowCommand = new RelayCommand(ToggleWindow);
@@ -75,6 +82,9 @@ public class MainViewModel : INotifyPropertyChanged
         _visibilityTimer.Interval = TimeSpan.FromSeconds(1);
         _visibilityTimer.Tick += VisibilityTimer_Tick;
         // ShowLabelWithDelay();
+        // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
+        var radiusValueSetting = _configManager.GetSetting<int>("RadiusValue");
+        CornerRadiusValue= radiusValueSetting;
     }
     
     // private async Task ShowLabelWithDelay()
@@ -277,6 +287,7 @@ public class MainViewModel : INotifyPropertyChanged
             {
                 _cornerRadiusValue = value;
                 OnPropertyChanged(nameof(CornerRadiusValue));
+                _configManager.SetSetting<int>("RadiusValue", value);
                 LabelVisibility = Visibility.Visible; // 显示标签
                 _visibilityTimer.Stop(); // 停止前一个定时器
                 _visibilityTimer.Start(); // 开始定时器，准备隐藏标签
@@ -303,10 +314,6 @@ public class MainViewModel : INotifyPropertyChanged
         _visibilityTimer.Stop();
     }
     
-
-    
-    
-
     
     public event PropertyChangedEventHandler PropertyChanged;
 

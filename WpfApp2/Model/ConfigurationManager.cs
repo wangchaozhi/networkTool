@@ -19,11 +19,27 @@ public class ConfigurationManager
         else
         {
             // 如果文件不存在，创建一个新的 JObject 并设置默认值
-            _settings = new JObject();
-            _settings["Settings"] = JObject.FromObject(new { Theme = "Default", FontStyle = "Arial",Scale="1.0" });
+            _settings = new JObject
+            {
+                ["Version"] = "v0.3",
+                ["Settings"] = JObject.FromObject(new { Theme = "Default", FontStyle = "Arial", Scale = "1.0" })
+            };
             SaveSettings();
         }
     }
+
+    public string GetVersion()
+    {
+        var version = _settings["Version"];
+        return version != null ? version.ToString() : "Unknown"; // 如果版本号未设置，则返回未知
+    }
+
+    public void SetVersion(string version)
+    {
+        _settings["Version"] = version;
+        SaveSettings();
+    }
+
 
     public void SetSetting<T>(string settingName, T value)
     {
@@ -39,7 +55,8 @@ public class ConfigurationManager
             // 使用 ToObject<T>() 来转换 JSON 数据到指定类型
             return settingValue.ToObject<T>();
         }
-        return default(T);  // 返回类型的默认值，例如对于 int 是 0，对于 bool 是 false 等
+
+        return default(T); // 返回类型的默认值，例如对于 int 是 0，对于 bool 是 false 等
     }
 
     private void SaveSettings()
@@ -48,4 +65,3 @@ public class ConfigurationManager
         File.WriteAllText(_jsonFilePath, json);
     }
 }
-
