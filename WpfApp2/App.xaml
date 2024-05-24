@@ -9,6 +9,7 @@
         <local:ThemeToBooleanConverter x:Key="ThemeConverter"/>
         <local:FontStyleToBooleanConverter x:Key="FontStyleConverter"/>
         <local:ScaleToBooleanConverter x:Key="ScaleConverter"/>
+        <local:IconToBooleanConverter x:Key="IconConverter"/>
             <tb:TaskbarIcon x:Key="MyNotifyIcon"
                             IconSource="pack://application:,,,/res/icon.ico"
                             ToolTipText="我的应用"
@@ -16,6 +17,14 @@
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu  Opened="ContextMenu_Opened">
                         <MenuItem Header="开机自启"  x:Name="autoStartMenu" IsCheckable="True" Checked="AutoStart_Checked" Unchecked="AutoStart_Unchecked" FontSize="11"/>
+                        <MenuItem Header="图标" FontSize="11">
+                            <MenuItem Header="默认" IsCheckable="True" FontSize="11"
+                                      Command="{Binding SetDefaultIconCommand}"
+                                      IsChecked="{Binding SelectedIcon, Converter={StaticResource IconConverter}, ConverterParameter={x:Static local:Icon.Default}}"/>
+                            <MenuItem Header="棕色" IsCheckable="True" FontSize="11"
+                                      Command="{Binding SetBrownIconCommand}"
+                                      IsChecked="{Binding SelectedIcon, Converter={StaticResource IconConverter}, ConverterParameter={x:Static local:Icon.Brown}}"/>
+                        </MenuItem>
                         <MenuItem Header="主题"  FontSize="11" >
                             <MenuItem Header="默认" IsCheckable="True" FontSize="11"
                                       Command="{Binding SetDefaultThemeCommand}"
@@ -72,6 +81,12 @@
                         <MenuItem Header="更新"  Click="Update_Click">
                         </MenuItem>
                         <MenuItem Header="退出" Command="{Binding ExitCommand}" FontSize="11"/>
+                        <!-- <MenuItem Header="{Binding }"  FontSize="11"/> -->
+                        <MenuItem Header="{Binding Source={x:Static local:ApplicationInfo.Version}}" FontSize="11">
+                            <MenuItem.Icon>
+                                <TextBlock Text="版本" FontSize="8" Foreground="Black" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>

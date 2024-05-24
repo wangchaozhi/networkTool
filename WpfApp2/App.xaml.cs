@@ -222,6 +222,15 @@ public partial class App : Application
 
         RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         key.SetValue(appName, $"\"{appPath}\"");
+        // 获取当前目录
+        string directoryPath = Path.GetDirectoryName(appPath);
+        // 将目录写入注册表
+        const string keyPath = @"SOFTWARE\MyCompany\MyApp";
+        using (var key2 = Registry.CurrentUser.CreateSubKey(keyPath))
+        {
+            key2.SetValue("InstallationDirectory", directoryPath);
+        }
+        
     }
 
     private void RemoveApplicationFromStartup()
@@ -244,8 +253,10 @@ public partial class App : Application
             // 发送 GET 请求到更新服务器
             using (var client = new HttpClient())
             {
+                // 设置超时时间为500毫秒
+                client.Timeout = TimeSpan.FromMilliseconds(500);
                 var configurationManager = MainViewModel._configManager;
-                configurationManager.SetVersion("v0.4");
+                configurationManager.SetVersion(ApplicationInfo.Version);
                 var version = configurationManager.GetVersion();
                 // string updateCheckUrl = $"http://192.168.3.23:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
                 string updateCheckUrl = $"http://8.134.168.19:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
@@ -284,6 +295,30 @@ public partial class App : Application
         }
     }
 
+    // private void StartUpdateProcess(string url, string filename)
+    // {
+    //     try
+    //     {
+    //         // 获得当前执行文件的目录
+    //         string directory = AppDomain.CurrentDomain.BaseDirectory;
+    //         string updaterPath = Path.Combine(directory, "WpfUpdate.exe");
+    //
+    //         // 构建命令行参数
+    //         string arguments = $"-u \"{url}\" -f \"{filename}\"";
+    //
+    //         // 启动更新程序1
+    //         Process.Start(updaterPath, arguments);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.Write(ex.Message);
+    //         var dialog = new TipDialog($"更新服务启动失败！");
+    //         dialog.Show();
+    //     }
+    // }
+    
+    
+    
     private void StartUpdateProcess(string url, string filename)
     {
         try
@@ -295,8 +330,15 @@ public partial class App : Application
             // 构建命令行参数
             string arguments = $"-u \"{url}\" -f \"{filename}\"";
 
-            // 启动更新程序1
-            Process.Start(updaterPath, arguments);
+            // 启动更新程序并以管理员权限运行
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = updaterPath,
+                Arguments = arguments,
+                Verb = "runas" // 设置以管理员权限运行
+            };
+
+            Process.Start(startInfo);
         }
         catch (Exception ex)
         {
@@ -305,6 +347,7 @@ public partial class App : Application
             dialog.Show();
         }
     }
+
 
 
     public class UpdateInfo

@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using WpfApp2;
 
 public class ConfigurationManager
 {
@@ -21,8 +22,8 @@ public class ConfigurationManager
             // 如果文件不存在，创建一个新的 JObject 并设置默认值
             _settings = new JObject
             {
-                ["Version"] = "v0.3",
-                ["Settings"] = JObject.FromObject(new { Theme = "Default", FontStyle = "Arial", Scale = "1.0" })
+                ["Version"] = ApplicationInfo.Version,
+                ["Settings"] = JObject.FromObject(new { Theme = "Default", FontStyle = "Arial", Scale = "1.0" ,RadiusValue =25,Icon ="Default"})
             };
             SaveSettings();
         }
@@ -31,7 +32,7 @@ public class ConfigurationManager
     public string GetVersion()
     {
         var version = _settings["Version"];
-        return version != null ? version.ToString() : "Unknown"; // 如果版本号未设置，则返回未知
+        return version != null ? version.ToString() : ApplicationInfo.Version; // 如果版本号未设置，则返回未知
     }
 
     public void SetVersion(string version)

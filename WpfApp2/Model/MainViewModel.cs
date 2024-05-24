@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -85,6 +86,10 @@ public class  MainViewModel : INotifyPropertyChanged
         // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
         var radiusValueSetting = _configManager.GetSetting<int>("RadiusValue");
         CornerRadiusValue= radiusValueSetting;
+        
+        
+        var iconSetting = _configManager.GetSetting<string>("Icon");
+        SelectedIcon= IconExtensions.ParseFromString(iconSetting);
     }
     
     // private async Task ShowLabelWithDelay()
@@ -178,6 +183,85 @@ public class  MainViewModel : INotifyPropertyChanged
         }
         _configManager.SetSetting<string>("Theme", theme.ToString());
     }
+    
+    
+    
+    private Icon _selectedIcon = Icon.Default;  // 默认选中的图标
+
+    public Icon SelectedIcon
+    {
+        get => _selectedIcon;
+        set
+        {
+            if (_selectedIcon != value)
+            {
+                _selectedIcon = value;
+                NotifyPropertyChanged(nameof(SelectedIcon));
+                UpdateIcon(value);  // 更新图标的方法
+            }
+        }
+    }
+    // private void UpdateIcon(Icon icon)
+    // {
+    //     switch (icon)
+    //     {
+    //         case Icon.Default:
+    //             windowService.ChangeIconSource();
+    //             break;
+    //         case Icon.Brown:
+    //             windowService.ChangeIconSource();
+    //             break;
+    //         // 添加其他图标的处理逻辑
+    //     }
+    //     _configManager.SetSetting<string>("Icon", icon.ToString());  // 保存图标设置
+    // }
+    
+    
+    // private void UpdateIcon(Icon icon)
+    // {
+    //     // 查找与给定图标类型匹配的IconData
+    //     var iconData = IconManager.Icons.FirstOrDefault(i => i.Type == icon);
+    //
+    //     if (iconData != null)
+    //     {
+    //         // 假设你想同时更新上传和下载图标，你可以调用两次ChangeIconSource方法
+    //         windowService.ChangeIconSource(iconData.UpIconPath);
+    //         windowService.ChangeIconSource(iconData.DownIconPath);
+    //     }
+    //     else
+    //     {
+    //         // 如果没有找到对应的图标数据，可能设置一个默认图标路径
+    //         windowService.ChangeIconSource("pack://application:,,,/Resources/defaultUp.ico");
+    //         windowService.ChangeIconSource("pack://application:,,,/Resources/defaultDown.ico");
+    //     }
+    //
+    //     // 保存当前图标设置
+    //     _configManager.SetSetting<string>("Icon", icon.ToString());
+    // }
+    
+    private void UpdateIcon(Icon icon)
+    {
+        // 查找与给定图标类型匹配的IconData
+        var iconData = IconManager.Icons.FirstOrDefault(i => i.Type == icon);
+
+        if (iconData != null)
+        {
+            // 将IconData作为参数传递给ChangeIconSource方法
+            windowService.ChangeIconSource(iconData);
+        }
+        else
+        {
+            // 如果没有找到对应的图标数据，可能设置一个默认图标路径
+            windowService.ChangeIconSource(new IconData(Icon.Default, "pack://application:,,,/Resources/defaultUp.ico", "pack://application:,,,/Resources/defaultDown.ico"));
+        }
+
+        // 保存当前图标设置
+        _configManager.SetSetting<string>("Icon", icon.ToString());
+    }
+
+    
+
+
     
     
     

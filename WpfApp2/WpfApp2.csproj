@@ -20,16 +20,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="res\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="res\icon.ico" />
       <Resource Include="res\icon.ico" />
       <None Remove="res\down.png" />
       <Resource Include="res\down.png" />
       <None Remove="res\up.png" />
       <Resource Include="res\up.png" />
+      <None Remove="res\down1.png" />
+      <Resource Include="res\down1.png" />
+      <None Remove="res\up1.png" />
+      <Resource Include="res\up1.png" />
+      <None Remove="res\down2.png" />
+      <Resource Include="res\down2.png" />
     </ItemGroup>
 
     <ItemGroup>

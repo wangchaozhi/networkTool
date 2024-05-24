@@ -19,16 +19,15 @@
             <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                 <!-- Upload Speed Row -->
                 <DockPanel DockPanel.Dock="Top" Margin="23,0,0,0">  <!-- Adjusted outer margin -->
-                    <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="6,0,0,0"/>
+                    <Image x:Name="uploadSpeedImage" DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="6,0,0,0"/>
                     <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
                 
                 <!-- Download Speed Row -->
                 <DockPanel DockPanel.Dock="Top" Margin="23,10,0,0">  <!-- Adjusted outer margin -->
-                    <Image DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="6,0,0,0"/>
+                    <Image  x:Name="downloadSpeedImage" DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="6,0,0,0"/>
                     <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
-              
             </DockPanel>
         </Border>
         <Label  Content="{Binding CornerRadiusValue, StringFormat='Current CornerRadius: {0:F2}'}" VerticalAlignment="Bottom" Visibility="{Binding LabelVisibility}" FontSize="7"  Margin="60,0,0,0"/>
