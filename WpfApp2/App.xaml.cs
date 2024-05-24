@@ -258,7 +258,7 @@ public partial class App : Application
                 var configurationManager = MainViewModel._configManager;
                 configurationManager.SetVersion(ApplicationInfo.Version);
                 var version = configurationManager.GetVersion();
-                // string updateCheckUrl = $"http://192.168.3.23:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
+                // string updateCheckUrl = $"http://192.168.3.26:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
                 string updateCheckUrl = $"http://8.134.168.19:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
                 // string updateCheckUrl = "http://192.168.3.23:3000/api/check-for-updates"; // 更新检查 API 地址
                 HttpResponseMessage response = await client.GetAsync(updateCheckUrl);
