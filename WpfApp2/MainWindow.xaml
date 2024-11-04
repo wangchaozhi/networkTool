@@ -6,7 +6,7 @@
         xmlns:wpfApp2="clr-namespace:WpfApp2"
         mc:Ignorable="d"
         ShowInTaskbar="False" 
-        Title="MainWindow" Height="68" Width="136"
+        Title="MainWindow" Height="40" Width="100"
         WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True"  Cursor="Hand">
     
     <Grid Background="Transparent" MouseDown="Grid_MouseDown" >
@@ -18,13 +18,13 @@
         <Border   x:Name="mainBorder" Background="{Binding BorderBackgroundColor}"  CornerRadius="{Binding CornerRadiusValue}" >
             <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left">
                 <!-- Upload Speed Row -->
-                <DockPanel DockPanel.Dock="Top" Margin="23,0,0,0">  <!-- Adjusted outer margin -->
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,0">  <!-- Adjusted outer margin -->
                     <Image x:Name="uploadSpeedImage" DockPanel.Dock="Left" Source="pack://application:,,,/res/up.png" Width="18" Height="18" Margin="6,0,0,0"/>
                     <TextBlock x:Name="uploadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
                 
                 <!-- Download Speed Row -->
-                <DockPanel DockPanel.Dock="Top" Margin="23,10,0,0">  <!-- Adjusted outer margin -->
+                <DockPanel DockPanel.Dock="Top" Margin="0,2,0,0">  <!-- Adjusted outer margin -->
                     <Image  x:Name="downloadSpeedImage" DockPanel.Dock="Left" Source="pack://application:,,,/res/down.png" Width="18" Height="18" Margin="6,0,0,0"/>
                     <TextBlock x:Name="downloadSpeedText" Text="0.00 KB/s" FontSize="12"   FontFamily="{Binding FontFamily}" Margin="5,2,0,0"/>
                 </DockPanel>
