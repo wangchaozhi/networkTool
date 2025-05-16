@@ -6,10 +6,15 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
+using WpfApp2.Windows;
 
 
 namespace WpfApp2;
@@ -420,6 +425,63 @@ public partial class MainWindow
             Hide(); // 关闭当前窗口，这会退出应用程序
         }
     }
+    
+    
+    private void Grid_DragEnter(object sender, DragEventArgs e)
+    {
+        // 判断是否是文件类型
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            e.Effects = DragDropEffects.Copy;
+        }
+        else
+        {
+            e.Effects = DragDropEffects.None;
+        }
+    }
+    
+    
+
+    private void Grid_Drop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length > 0)
+            {
+                
+                string result = string.Join(Environment.NewLine, files);
+                Clipboard.SetText(result);
+                // 获取当前窗口的位置信息
+                // var currentLeft = this.Left-15;
+                // var currentTop = this.Top-6;
+                var currentLeft = this.Left;
+                var currentTop = this.Top;
+                var currentWidth = this.Width;
+                var currentHeight = this.Height;
+                // 创建新窗口
+                var newWindow = new FaceWindow(); // 你可以换成别的 Window 类型
+                // 设置位置和大小一致
+                newWindow.Left = currentLeft;
+                newWindow.Top = currentTop;
+                newWindow.Width = currentWidth;
+                newWindow.Height = currentHeight;
+                // 如果你希望它在当前窗口上方（Z序更高）
+                newWindow.Topmost = true;
+                this.Hide();
+                // 显示窗口
+                newWindow.Show();
+                newWindow.AnimateFace(this);
+                Point dropPosition = e.GetPosition(FileCanvas); // 鼠标拖入点
+                newWindow.AnimateFlyingFile(dropPosition);
+                // this.Show();
+            
+            }
+        }
+    }
+   
+
+
 
 
     public void ShowWindow()
