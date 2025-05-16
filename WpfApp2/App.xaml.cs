@@ -98,7 +98,7 @@ public partial class App : Application
                 // ShowWindow(hWnd, 5);  // SW_SHOW
                 // ShowWindow(hWnd, 0);  // SW_HIDE
             }
-
+            MessageBox.Show( "应用程序已经在运行。");
             Application.Current.Shutdown(); // 关闭当前应用程序实例
             return;
         }
