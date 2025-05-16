@@ -9,7 +9,9 @@
         Title="MainWindow" Height="68" Width="136"
         WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True"  Cursor="Hand">
     
-    <Grid Background="Transparent" MouseDown="Grid_MouseDown" >
+    <Grid Background="Transparent" MouseDown="Grid_MouseDown"  AllowDrop="True"
+          Drop="Grid_Drop"
+          DragEnter="Grid_DragEnter" >
         <Grid.LayoutTransform>
             <ScaleTransform x:Name="scaleTransform"  ScaleX="{Binding CurrentScale}" 
                             ScaleY="{Binding CurrentScale}"/>

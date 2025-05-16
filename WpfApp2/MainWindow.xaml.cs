@@ -420,6 +420,42 @@ public partial class MainWindow
             Hide(); // 关闭当前窗口，这会退出应用程序
         }
     }
+    
+    
+    private void Grid_DragEnter(object sender, DragEventArgs e)
+    {
+        // 判断是否是文件类型
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            e.Effects = DragDropEffects.Copy;
+        }
+        else
+        {
+            e.Effects = DragDropEffects.None;
+        }
+    }
+
+    private void Grid_Drop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length > 0)
+            {
+                
+                string result = string.Join(Environment.NewLine, files);
+                Clipboard.SetText(result);
+                // string filePath = files[0]; // 这里只取第一个文件路径
+                //
+                // // 复制到剪贴板
+                // Clipboard.SetText(filePath);
+
+                // // 可选：弹出提示
+                // MessageBox.Show("文件路径已复制到剪贴板:\n" + filePath);
+            }
+        }
+    }
+
 
 
     public void ShowWindow()
