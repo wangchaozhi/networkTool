@@ -1,0 +1,167 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example v0.3.2.3"
+        required: true
+        type: string
+      configuration:
+        description: "Build configuration"
+        required: true
+        default: "Release"
+        type: choice
+        options:
+          - Release
+          - Debug
+      prerelease:
+        description: "Mark the GitHub release as prerelease"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create or update release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate tag input
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag }}".Trim()
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            throw "The tag input cannot be empty."
+          }
+
+          if ($tag.StartsWith("refs/tags/")) {
+            throw "Enter only the tag name, for example v0.3.2.3, not refs/tags/v0.3.2.3."
+          }
+
+      - name: Create release if needed
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ inputs.tag }}".Trim()
+          $title = "WpfApp2 $tag"
+          $notes = "Automated build from workflow run $env:GITHUB_RUN_NUMBER."
+
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            return
+          }
+
+          $ghArgs = @(
+            "release", "create", $tag,
+            "--target", $env:GITHUB_SHA,
+            "--title", $title,
+            "--notes", $notes
+          )
+
+          if ("${{ inputs.prerelease }}" -eq "true") {
+            $ghArgs += "--prerelease"
+          }
+
+          gh @ghArgs
+
+  build-and-upload:
+    name: Build ${{ matrix.runtime }} ${{ matrix.publish_mode }}
+    needs: create-release
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: win-x86
+            self_contained: false
+            publish_mode: framework-dependent
+          - runtime: win-x86
+            self_contained: true
+            publish_mode: self-contained
+          - runtime: win-x64
+            self_contained: false
+            publish_mode: framework-dependent
+          - runtime: win-x64
+            self_contained: true
+            publish_mode: self-contained
+          - runtime: win-arm64
+            self_contained: false
+            publish_mode: framework-dependent
+          - runtime: win-arm64
+            self_contained: true
+            publish_mode: self-contained
+
+    env:
+      PROJECT_PATH: WpfApp2/WpfApp2.csproj
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Validate tag input
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag }}".Trim()
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            throw "The tag input cannot be empty."
+          }
+
+          if ($tag.StartsWith("refs/tags/")) {
+            throw "Enter only the tag name, for example v0.3.2.3, not refs/tags/v0.3.2.3."
+          }
+
+      - name: Restore
+        run: dotnet restore $env:PROJECT_PATH
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          $publishDir = Join-Path $env:RUNNER_TEMP "publish"
+          $selfContained = "${{ matrix.self_contained }}"
+          dotnet publish $env:PROJECT_PATH `
+            --configuration "${{ inputs.configuration }}" `
+            --runtime "${{ matrix.runtime }}" `
+            --self-contained $selfContained `
+            --output $publishDir
+
+      - name: Package asset
+        id: package
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag }}".Trim()
+          $safeTag = $tag -replace '[^A-Za-z0-9._-]', '-'
+          $assetName = "WpfApp2-$safeTag-${{ matrix.runtime }}-${{ matrix.publish_mode }}.zip"
+          $publishDir = Join-Path $env:RUNNER_TEMP "publish"
+          $assetPath = Join-Path $env:RUNNER_TEMP $assetName
+
+          if (Test-Path $assetPath) {
+            Remove-Item -LiteralPath $assetPath -Force
+          }
+
+          Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $assetPath -Force
+
+          "asset_name=$assetName" >> $env:GITHUB_OUTPUT
+          "asset_path=$assetPath" >> $env:GITHUB_OUTPUT
+
+      - name: Upload release asset
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ inputs.tag }}".Trim()
+          $assetPath = "${{ steps.package.outputs.asset_path }}"
+          gh release upload $tag $assetPath --clobber
