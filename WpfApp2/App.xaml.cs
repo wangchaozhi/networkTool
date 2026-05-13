@@ -24,8 +24,15 @@ namespace WpfApp2;
 /// </summary>
 public partial class App : Application
 {
-    private TaskbarIcon notifyIcon;
+    private const string AppName = "MyApp";
+    private const string RunRegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+    private const string AppRegistryPath = @"SOFTWARE\MyCompany\MyApp";
+    private const string UpdateCheckBaseUrl = "http://8.134.168.19:3000/api/check-for-updates";
+    private static readonly TimeSpan UpdateCheckTimeout = TimeSpan.FromMilliseconds(500);
 
+    private TaskbarIcon? notifyIcon;
+    private ConfigurationManager? _configManager;
+    private static readonly HttpClient _httpClient = new HttpClient();
 
     // 在类中声明这些 API
     [DllImport("user32.dll")]
@@ -40,7 +47,7 @@ public partial class App : Application
     }
 
     [DllImport("user32.dll")]
-    static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
     [DllImport("user32.dll")]
     static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -53,20 +60,26 @@ public partial class App : Application
 
     private void InitializeAutoStartMenuItem()
     {
-        string appName = "MyApp";
         try
         {
             using (RegistryKey key =
-                   Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
+                   Registry.CurrentUser.OpenSubKey(RunRegistryPath, false))
             {
-                bool isAutoStartEnabled = key != null && key.GetValue(appName) != null;
+                bool isAutoStartEnabled = key != null && key.GetValue(AppName) != null;
                 // var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[0] as MenuItem; // 确保Items索引与实际对应
                 // var autoStartMenu = autoStartMenu;
-                var contextMenu = notifyIcon.ContextMenu as ContextMenu;
+                if (notifyIcon?.ContextMenu is not ContextMenu contextMenu)
+                {
+                    return;
+                }
+
                 var autoStartMenu = contextMenu.Items
                     .OfType<MenuItem>()
                     .FirstOrDefault(item => item.Header.ToString() == "开机自启");
-                autoStartMenu.IsChecked = isAutoStartEnabled;
+                if (autoStartMenu != null)
+                {
+                    autoStartMenu.IsChecked = isAutoStartEnabled;
+                }
             }
         }
         catch (Exception ex)
@@ -122,6 +135,7 @@ public partial class App : Application
         }
 
         var configurationManager = new ConfigurationManager(jsonFilePath);
+        _configManager = configurationManager;
         var viewModel = new MainViewModel(windowService, configurationManager);
 
         MainWindow.DataContext = viewModel;
@@ -130,14 +144,18 @@ public partial class App : Application
         notifyIcon.DataContext = viewModel;
         // 注册事件
 
-        var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items
-            .OfType<MenuItem>()
-            .FirstOrDefault(item => item.Header.ToString() == "开机自启");
+        if (notifyIcon.ContextMenu is ContextMenu contextMenu)
+        {
+            var autoStartMenu = contextMenu.Items
+                .OfType<MenuItem>()
+                .FirstOrDefault(item => item.Header.ToString() == "开机自启");
 
-
-        // var autoStartMenu = ((ContextMenu)notifyIcon.ContextMenu).Items[1] as MenuItem;
-        autoStartMenu.Checked += AutoStart_Checked;
-        autoStartMenu.Unchecked += AutoStart_Unchecked;
+            if (autoStartMenu != null)
+            {
+                autoStartMenu.Checked += AutoStart_Checked;
+                autoStartMenu.Unchecked += AutoStart_Unchecked;
+            }
+        }
         notifyIcon.TrayMouseDoubleClick += NotifyIcon_TrayMouseDoubleClick;
         InitializeAutoStartMenuItem();
 
@@ -191,7 +209,11 @@ public partial class App : Application
             if (GetCursorPos(out p))
             {
                 // 将鼠标位置转换为 DPI 无关的值
-                var visual = Application.Current.MainWindow as Visual;
+                if (Application.Current.MainWindow is not Visual visual)
+                {
+                    return;
+                }
+
                 double dpiFactor = VisualTreeHelper.GetDpi(visual).DpiScaleX;
                 menu.HorizontalOffset = p.X / dpiFactor;
                 menu.VerticalOffset = p.Y / dpiFactor;
@@ -212,7 +234,6 @@ public partial class App : Application
 
     private void SetApplicationToRunAtStartup()
     {
-        string appName = "MyApp";
         string appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
         // 确认路径以.dll结尾，然后替换为.exe
         if (appPath.EndsWith(".dll"))
@@ -220,24 +241,36 @@ public partial class App : Application
             appPath = appPath.Replace(".dll", ".exe");
         }
 
-        RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-        key.SetValue(appName, $"\"{appPath}\"");
-        // 获取当前目录
-        string directoryPath = Path.GetDirectoryName(appPath);
-        // 将目录写入注册表
-        const string keyPath = @"SOFTWARE\MyCompany\MyApp";
-        using (var key2 = Registry.CurrentUser.CreateSubKey(keyPath))
+        using (var key = Registry.CurrentUser.OpenSubKey(RunRegistryPath, true))
         {
-            key2.SetValue("InstallationDirectory", directoryPath);
+            if (key == null)
+            {
+                MessageBox.Show("无法打开开机自启注册表项。");
+                return;
+            }
+
+            key.SetValue(AppName, $"\"{appPath}\"");
         }
-        
+
+        string? directoryPath = Path.GetDirectoryName(appPath);
+        using (var key2 = Registry.CurrentUser.CreateSubKey(AppRegistryPath))
+        {
+            if (key2 != null && directoryPath != null)
+            {
+                key2.SetValue("InstallationDirectory", directoryPath);
+            }
+        }
     }
 
     private void RemoveApplicationFromStartup()
     {
-        string appName = "MyApp";
-        RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-        key.DeleteValue(appName, false);
+        using var key = Registry.CurrentUser.OpenSubKey(RunRegistryPath, true);
+        if (key == null)
+        {
+            return;
+        }
+
+        key.DeleteValue(AppName, false);
     }
 
     private void Update_Click(object sender, RoutedEventArgs e)
@@ -250,75 +283,34 @@ public partial class App : Application
     {
         try
         {
-            // 发送 GET 请求到更新服务器
-            using (var client = new HttpClient())
+            _configManager.SetVersion(ApplicationInfo.Version);
+            var version = _configManager.GetVersion();
+            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMilliseconds(500));
+            string updateCheckUrl = $"http://8.134.168.19:3000/api/check-for-updates?version={version}";
+            HttpResponseMessage response = await _httpClient.GetAsync(updateCheckUrl, cts.Token);
+            response.EnsureSuccessStatusCode();
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            UpdateInfo updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(jsonResponse);
+            if (updateInfo != null && updateInfo.UpdateAvailable)
             {
-                // 设置超时时间为500毫秒
-                client.Timeout = TimeSpan.FromMilliseconds(500);
-                var configurationManager = MainViewModel._configManager;
-                configurationManager.SetVersion(ApplicationInfo.Version);
-                var version = configurationManager.GetVersion();
-                // string updateCheckUrl = $"http://192.168.3.26:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
-                string updateCheckUrl = $"http://8.134.168.19:3000/api/check-for-updates?version={version}"; // 更新检查 API 地址
-                // string updateCheckUrl = "http://192.168.3.23:3000/api/check-for-updates"; // 更新检查 API 地址
-                HttpResponseMessage response = await client.GetAsync(updateCheckUrl);
-                response.EnsureSuccessStatusCode();
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-
-                // 解析 JSON 响应
-                UpdateInfo updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(jsonResponse);
-                
-                if (updateInfo != null && updateInfo.UpdateAvailable)
-                {
-                    
-                    
-                    UpdateDialog dialog = new UpdateDialog();
-                    bool? result = dialog.ShowDialog();
-
-                    if (result.HasValue && result.Value)
-                    {
-                        // 用户点击了 "是" 按钮，执行更新逻辑
-                        StartUpdateProcess(updateInfo.Url, updateInfo.Filename);
-                    }
-                }
-                else
-                {
-                    var tipDialog = new TipDialog("您的程序已是最新版本。");
-                    tipDialog.ShowDialog();
-                }
+                UpdateDialog dialog = new UpdateDialog();
+                bool? result = dialog.ShowDialog();
+                if (result.HasValue && result.Value)
+                    StartUpdateProcess(updateInfo.Url, updateInfo.Filename);
+            }
+            else
+            {
+                new TipDialog("您的程序已是最新版本。").ShowDialog();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var dialog = new TipDialog("连接更新服务器失败,网络出小差了~~");
             dialog.Show();
         }
     }
 
-    // private void StartUpdateProcess(string url, string filename)
-    // {
-    //     try
-    //     {
-    //         // 获得当前执行文件的目录
-    //         string directory = AppDomain.CurrentDomain.BaseDirectory;
-    //         string updaterPath = Path.Combine(directory, "WpfUpdate.exe");
-    //
-    //         // 构建命令行参数
-    //         string arguments = $"-u \"{url}\" -f \"{filename}\"";
-    //
-    //         // 启动更新程序1
-    //         Process.Start(updaterPath, arguments);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.Write(ex.Message);
-    //         var dialog = new TipDialog($"更新服务启动失败！");
-    //         dialog.Show();
-    //     }
-    // }
-    
-    
-    
     private void StartUpdateProcess(string url, string filename)
     {
         try
