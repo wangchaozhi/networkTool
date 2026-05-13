@@ -8,4 +8,8 @@ public interface IWindowService
 
     void ResizeWindow(double width, double height);
 
+
+    void ChangeIconSource(IconData iconData);
+
+
 }

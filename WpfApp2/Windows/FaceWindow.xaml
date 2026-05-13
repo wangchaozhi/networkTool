@@ -1,0 +1,17 @@
+﻿<Window x:Class="WpfApp2.Windows.FaceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:WpfApp2.Windows"
+        mc:Ignorable="d"
+        Title="FaceWindow" ShowInTaskbar="False" 
+      Height="68" Width="136"
+        WindowStyle="None" ResizeMode="NoResize"   Topmost="True"  Background="Transparent"  AllowsTransparency="True"    Cursor="Hand">
+    <Grid Background="Transparent" >
+        <Image x:Name="FaceImage" Width="50" Height="50" Opacity="0"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Source="pack://application:,,,/res/face.png"/> 
+        <Canvas x:Name="FileCanvas" IsHitTestVisible="False" />
+    </Grid>
+</Window>

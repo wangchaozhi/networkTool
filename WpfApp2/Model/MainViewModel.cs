@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,12 +10,15 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using WpfApp2;
 
-public class MainViewModel : INotifyPropertyChanged
+
+public class  MainViewModel : INotifyPropertyChanged
 {
     private bool _isWindowVisible;
     private string _message;
     private SolidColorBrush _borderBackgroundColor = new SolidColorBrush(Colors.White); // 默认背景色
-    
+    // public static ConfigurationManager _configManager;
+    public static  ConfigurationManager _configManager;
+
     
 
     private  readonly IWindowService windowService;
@@ -39,12 +44,35 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ExitCommand { get; private set; }
     public ICommand UpdateMessageCommand { get; }
     
+    // static MainViewModel()
+    // {
+    //     Console.Write("123");
+    //     // 这里可以进行静态字段的初始化操作
+    //     // MyStaticField = 42;
+    //
+    //     // 这里还可以执行其他的静态初始化操作
+    //     // 例如，连接到数据库，加载配置文件等
+    // }
     
     
-    
-    public MainViewModel(IWindowService windowService)
+    public MainViewModel(IWindowService windowService,ConfigurationManager configManager)
     {
         this.windowService = windowService;
+        _configManager = configManager;
+        var fontStyleSetting = _configManager.GetSetting<string>("FontStyle");
+        CurrentFontStyle = FontStyleTypeExtensions.ParseFromString(fontStyleSetting);
+        
+        
+        // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
+        var themeSetting = _configManager.GetSetting<string>("Theme");
+        SelectedTheme = ThemeExtensions.ParseFromString(themeSetting);
+        
+        
+        
+        // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
+        var scaleSetting = _configManager.GetSetting<double>("Scale");
+        CurrentScale = scaleSetting;
+        
         UpdateMessageCommand = new RelayCommand(UpdateMessage);
         ToggleWindowCommand = new RelayCommand(ToggleWindow);
         ExitCommand = new RelayCommand(() => System.Windows.Application.Current.Shutdown());
@@ -55,6 +83,13 @@ public class MainViewModel : INotifyPropertyChanged
         _visibilityTimer.Interval = TimeSpan.FromSeconds(1);
         _visibilityTimer.Tick += VisibilityTimer_Tick;
         // ShowLabelWithDelay();
+        // 从配置文件中获取默认主题值，并转换为 Theme 枚举类型
+        var radiusValueSetting = _configManager.GetSetting<int>("RadiusValue");
+        CornerRadiusValue= radiusValueSetting;
+        
+        
+        var iconSetting = _configManager.GetSetting<string>("Icon");
+        SelectedIcon= IconExtensions.ParseFromString(iconSetting);
     }
     
     // private async Task ShowLabelWithDelay()
@@ -146,7 +181,87 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
             // 添加其他主题的处理逻辑
         }
+        _configManager.SetSetting<string>("Theme", theme.ToString());
     }
+    
+    
+    
+    private Icon _selectedIcon = Icon.Default;  // 默认选中的图标
+
+    public Icon SelectedIcon
+    {
+        get => _selectedIcon;
+        set
+        {
+            if (_selectedIcon != value)
+            {
+                _selectedIcon = value;
+                NotifyPropertyChanged(nameof(SelectedIcon));
+                UpdateIcon(value);  // 更新图标的方法
+            }
+        }
+    }
+    // private void UpdateIcon(Icon icon)
+    // {
+    //     switch (icon)
+    //     {
+    //         case Icon.Default:
+    //             windowService.ChangeIconSource();
+    //             break;
+    //         case Icon.Brown:
+    //             windowService.ChangeIconSource();
+    //             break;
+    //         // 添加其他图标的处理逻辑
+    //     }
+    //     _configManager.SetSetting<string>("Icon", icon.ToString());  // 保存图标设置
+    // }
+    
+    
+    // private void UpdateIcon(Icon icon)
+    // {
+    //     // 查找与给定图标类型匹配的IconData
+    //     var iconData = IconManager.Icons.FirstOrDefault(i => i.Type == icon);
+    //
+    //     if (iconData != null)
+    //     {
+    //         // 假设你想同时更新上传和下载图标，你可以调用两次ChangeIconSource方法
+    //         windowService.ChangeIconSource(iconData.UpIconPath);
+    //         windowService.ChangeIconSource(iconData.DownIconPath);
+    //     }
+    //     else
+    //     {
+    //         // 如果没有找到对应的图标数据，可能设置一个默认图标路径
+    //         windowService.ChangeIconSource("pack://application:,,,/Resources/defaultUp.ico");
+    //         windowService.ChangeIconSource("pack://application:,,,/Resources/defaultDown.ico");
+    //     }
+    //
+    //     // 保存当前图标设置
+    //     _configManager.SetSetting<string>("Icon", icon.ToString());
+    // }
+    
+    private void UpdateIcon(Icon icon)
+    {
+        // 查找与给定图标类型匹配的IconData
+        var iconData = IconManager.Icons.FirstOrDefault(i => i.Type == icon);
+
+        if (iconData != null)
+        {
+            // 将IconData作为参数传递给ChangeIconSource方法
+            windowService.ChangeIconSource(iconData);
+        }
+        else
+        {
+            // 如果没有找到对应的图标数据，可能设置一个默认图标路径
+            windowService.ChangeIconSource(new IconData(Icon.Default, "pack://application:,,,/Resources/defaultUp.ico", "pack://application:,,,/Resources/defaultDown.ico"));
+        }
+
+        // 保存当前图标设置
+        _configManager.SetSetting<string>("Icon", icon.ToString());
+    }
+
+    
+
+
     
     
     
@@ -165,9 +280,10 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
     
- 
+   
     
     private FontStyleType _currentFontStyle = FontStyleType.Arial; // 默认值
+    
     public FontStyleType CurrentFontStyle
     {
         get => _currentFontStyle;
@@ -181,6 +297,7 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
     }
+    
     private void UpdateFontStyle(FontStyleType fontStyle)
     {
         switch (fontStyle)
@@ -202,6 +319,8 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
             // 添加其他字体样式的处理逻辑
         }
+        _configManager.SetSetting<string>("FontStyle", fontStyle.ToString());
+       
     }
     
     private double _currentScale = 1.0; // 默认缩放比例为1倍
@@ -232,6 +351,7 @@ public class MainViewModel : INotifyPropertyChanged
         windowService.ResizeWindow(newWidth, newHeight);
         // 更新 ViewModel 中的缩放比例，如果需要通知UI变化
         CurrentScale = scale;
+        _configManager.SetSetting<double>("Scale",scale );
     }
 
     
@@ -251,6 +371,7 @@ public class MainViewModel : INotifyPropertyChanged
             {
                 _cornerRadiusValue = value;
                 OnPropertyChanged(nameof(CornerRadiusValue));
+                _configManager.SetSetting<int>("RadiusValue", value);
                 LabelVisibility = Visibility.Visible; // 显示标签
                 _visibilityTimer.Stop(); // 停止前一个定时器
                 _visibilityTimer.Start(); // 开始定时器，准备隐藏标签
@@ -277,10 +398,6 @@ public class MainViewModel : INotifyPropertyChanged
         _visibilityTimer.Stop();
     }
     
-
-    
-    
-
     
     public event PropertyChangedEventHandler PropertyChanged;
 

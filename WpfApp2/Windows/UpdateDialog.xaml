@@ -1,0 +1,15 @@
+﻿<Window x:Class="WpfApp2.Windows.UpdateDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="更新提示" Height="150" Width="300"  Topmost="True"  WindowStartupLocation="CenterScreen">  <!-- 确保窗口在屏幕中心打开 -->
+    <Grid>
+        <TextBlock Text="有新版本可用，是否立即更新？" Margin="0,-40,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10">
+            <Button Content="是" Name="YesButton" Click="YesButton_Click" Width="80" Height="25" Margin="5"/>  <!-- 调整按钮大小 -->
+            <Button Content="否" Name="NoButton" Click="NoButton_Click" Width="80" Height="25" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>
