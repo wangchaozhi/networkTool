@@ -11,8 +11,8 @@ public partial class MainWindow
 {
     private long _lastBytesSent;
     private long _lastBytesReceived;
-    private DispatcherTimer _timer;
-    private NetworkInterface _currentInterface;
+    private DispatcherTimer? _timer;
+    private NetworkInterface? _currentInterface;
 
     private const long KiloByte = 1024;
     private const long MegaByte = 1024 * KiloByte;
@@ -25,14 +25,14 @@ public partial class MainWindow
         this.Closed += MainWindow_Closed;
     }
 
-    private void MainWindow_Closed(object sender, EventArgs e)
+    private void MainWindow_Closed(object? sender, EventArgs e)
     {
         NetworkChange.NetworkAddressChanged -= NetworkAddressChanged;
         NetworkChange.NetworkAvailabilityChanged -= NetworkAvailabilityChanged;
         this.Closed -= MainWindow_Closed;
     }
 
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
         double screenWidth = SystemParameters.WorkArea.Width;
         double screenHeight = SystemParameters.WorkArea.Height;
@@ -44,12 +44,12 @@ public partial class MainWindow
         InitializeNetworkInterface();
     }
 
-    private void NetworkAddressChanged(object sender, EventArgs e)
+    private void NetworkAddressChanged(object? sender, EventArgs e)
     {
         Dispatcher.Invoke(InitializeNetworkInterface);
     }
 
-    private void NetworkAvailabilityChanged(object sender, NetworkAvailabilityEventArgs e)
+    private void NetworkAvailabilityChanged(object? sender, NetworkAvailabilityEventArgs e)
     {
         if (e.IsAvailable)
             Dispatcher.Invoke(InitializeNetworkInterface);
@@ -57,7 +57,7 @@ public partial class MainWindow
 
     private void InitializeNetworkInterface()
     {
-        NetworkInterface best = null;
+        NetworkInterface? best = null;
         long maxData = 0;
 
         foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
@@ -101,7 +101,7 @@ public partial class MainWindow
         _timer.Start();
     }
 
-    private void Timer_Tick(object sender, EventArgs e)
+    private void Timer_Tick(object? sender, EventArgs e)
     {
         if (_currentInterface == null) return;
 
@@ -142,7 +142,10 @@ public partial class MainWindow
 
         if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
         {
-            ((MainViewModel)DataContext).IsWindowVisible = false;
+            if (DataContext is MainViewModel viewModel)
+            {
+                viewModel.IsWindowVisible = false;
+            }
             Hide();
         }
     }
@@ -158,7 +161,11 @@ public partial class MainWindow
     {
         if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
 
-        string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        if (e.Data.GetData(DataFormats.FileDrop) is not string[] files)
+        {
+            return;
+        }
+
         if (files.Length == 0) return;
 
         Clipboard.SetText(string.Join(Environment.NewLine, files));

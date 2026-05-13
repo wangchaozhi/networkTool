@@ -72,7 +72,7 @@ public partial class TaiChiWindow : Window, INotifyPropertyChanged
         rotateTransform.BeginAnimation(RotateTransform.AngleProperty, rotateAnimation);
     }
 
-    private void Animation_Completed(object sender, EventArgs e)
+    private void Animation_Completed(object? sender, EventArgs e)
     {
         // 动画完成后重新订阅事件
         Taichi.MouseDown += Taichi_MouseDown;
@@ -89,7 +89,7 @@ public partial class TaiChiWindow : Window, INotifyPropertyChanged
         this.Top = (screenHeight / 2) - (windowHeight / 2);
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -4,7 +4,7 @@ namespace WpfApp2.Windows;
 
 public partial class TipDialog : Window
 {
-    public string Message { get; set; }
+    public string Message { get; set; } = string.Empty;
     public TipDialog()
     {
         InitializeComponent();

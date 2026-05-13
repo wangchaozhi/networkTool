@@ -62,7 +62,7 @@ public partial class App : Application
     {
         try
         {
-            using (RegistryKey key =
+            using (RegistryKey? key =
                    Registry.CurrentUser.OpenSubKey(RunRegistryPath, false))
             {
                 bool isAutoStartEnabled = key != null && key.GetValue(AppName) != null;
@@ -202,7 +202,7 @@ public partial class App : Application
 
     private void ContextMenu_Opened(object sender, RoutedEventArgs e)
     {
-        ContextMenu menu = sender as ContextMenu;
+        ContextMenu? menu = sender as ContextMenu;
         if (menu != null)
         {
             POINT p;
@@ -283,17 +283,29 @@ public partial class App : Application
     {
         try
         {
+            if (_configManager == null)
+            {
+                new TipDialog("配置服务尚未初始化，暂时无法检查更新。").ShowDialog();
+                return;
+            }
+
             _configManager.SetVersion(ApplicationInfo.Version);
             var version = _configManager.GetVersion();
-            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMilliseconds(500));
-            string updateCheckUrl = $"http://8.134.168.19:3000/api/check-for-updates?version={version}";
+            using var cts = new CancellationTokenSource(UpdateCheckTimeout);
+            string updateCheckUrl = $"{UpdateCheckBaseUrl}?version={Uri.EscapeDataString(version)}";
             HttpResponseMessage response = await _httpClient.GetAsync(updateCheckUrl, cts.Token);
             response.EnsureSuccessStatusCode();
             string jsonResponse = await response.Content.ReadAsStringAsync();
 
-            UpdateInfo updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(jsonResponse);
+            UpdateInfo? updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(jsonResponse);
             if (updateInfo != null && updateInfo.UpdateAvailable)
             {
+                if (string.IsNullOrWhiteSpace(updateInfo.Url) || string.IsNullOrWhiteSpace(updateInfo.Filename))
+                {
+                    new TipDialog("更新信息不完整，无法启动更新。").ShowDialog();
+                    return;
+                }
+
                 UpdateDialog dialog = new UpdateDialog();
                 bool? result = dialog.ShowDialog();
                 if (result.HasValue && result.Value)
@@ -345,8 +357,8 @@ public partial class App : Application
     public class UpdateInfo
     {
         public bool UpdateAvailable { get; set; }
-        public string Url { get; set; }
-        public string Filename { get; set; }
+        public string? Url { get; set; }
+        public string? Filename { get; set; }
     }
 
 

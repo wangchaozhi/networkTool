@@ -14,9 +14,9 @@ using WpfApp2;
 public class  MainViewModel : INotifyPropertyChanged
 {
     private bool _isWindowVisible;
-    private string _message;
+    private string _message = string.Empty;
     private SolidColorBrush _borderBackgroundColor = new SolidColorBrush(Colors.White); // 默认背景色
-    private static ConfigurationManager _configManager;
+    private static ConfigurationManager _configManager = null!;
 
     
 
@@ -384,16 +384,16 @@ public class  MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private void VisibilityTimer_Tick(object sender, EventArgs e)
+    private void VisibilityTimer_Tick(object? sender, EventArgs e)
     {
         LabelVisibility = Visibility.Collapsed; // 隐藏标签
         _visibilityTimer.Stop();
     }
     
     
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         if (propertyName == nameof(IsWindowVisible))
