@@ -16,8 +16,7 @@ public class  MainViewModel : INotifyPropertyChanged
     private bool _isWindowVisible;
     private string _message;
     private SolidColorBrush _borderBackgroundColor = new SolidColorBrush(Colors.White); // 默认背景色
-    // public static ConfigurationManager _configManager;
-    public static  ConfigurationManager _configManager;
+    private static ConfigurationManager _configManager;
 
     
 
@@ -156,7 +155,7 @@ public class  MainViewModel : INotifyPropertyChanged
             if (_selectedTheme != value)
             {
                 _selectedTheme = value;
-                NotifyPropertyChanged(nameof(SelectedTheme));
+                OnPropertyChanged(nameof(SelectedTheme));
                 UpdateTheme(value);  // 更新主题的方法
             }
         }
@@ -196,7 +195,7 @@ public class  MainViewModel : INotifyPropertyChanged
             if (_selectedIcon != value)
             {
                 _selectedIcon = value;
-                NotifyPropertyChanged(nameof(SelectedIcon));
+                OnPropertyChanged(nameof(SelectedIcon));
                 UpdateIcon(value);  // 更新图标的方法
             }
         }
@@ -275,7 +274,7 @@ public class  MainViewModel : INotifyPropertyChanged
             if (_fontFamily != value)
             {
                 _fontFamily = value;
-                NotifyPropertyChanged(nameof(FontFamily));
+                OnPropertyChanged(nameof(FontFamily));
             }
         }
     }
@@ -292,7 +291,7 @@ public class  MainViewModel : INotifyPropertyChanged
             if (_currentFontStyle != value)
             {
                 _currentFontStyle = value;
-                NotifyPropertyChanged(nameof(CurrentFontStyle));
+                OnPropertyChanged(nameof(CurrentFontStyle));
                 UpdateFontStyle(value);  // 直接更新字体样式
             }
         }
@@ -333,7 +332,7 @@ public class  MainViewModel : INotifyPropertyChanged
             if (_currentScale != value)
             {
                 _currentScale = value;
-                NotifyPropertyChanged(nameof(CurrentScale));
+                OnPropertyChanged(nameof(CurrentScale));
                 UpdateScale(value);  // Correctly calls UpdateScale without recursion
             }
         }
@@ -343,15 +342,8 @@ public class  MainViewModel : INotifyPropertyChanged
 
     private void UpdateScale(double scale)
     {
-        // 根据缩放比例调整窗口的宽度和高度
-        double newWidth = baseWidth * scale;
-        double newHeight = baseHeight * scale;
-
-        // 使用 WindowService 调整窗口尺寸
-        windowService.ResizeWindow(newWidth, newHeight);
-        // 更新 ViewModel 中的缩放比例，如果需要通知UI变化
-        CurrentScale = scale;
-        _configManager.SetSetting<double>("Scale",scale );
+        windowService.ResizeWindow(baseWidth * scale, baseHeight * scale);
+        _configManager.SetSetting<double>("Scale", scale);
     }
 
     
@@ -406,14 +398,6 @@ public class  MainViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         if (propertyName == nameof(IsWindowVisible))
             CommandManager.InvalidateRequerySuggested();
-    }
-    
-    protected virtual void NotifyPropertyChanged(params string[] propertyNames)
-    {
-        foreach (var propertyName in propertyNames)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
     
     private void UpdateMessage()
