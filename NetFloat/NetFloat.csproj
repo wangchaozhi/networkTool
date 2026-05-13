@@ -41,6 +41,14 @@
       <Resource Include="res\face.png" />
       <None Remove="res\file.png" />
       <Resource Include="res\file.png" />
+      <None Remove="res\nailong_eater.png" />
+      <Resource Include="res\nailong_eater.png" />
+      <None Remove="res\nailong_eater_open.png" />
+      <Resource Include="res\nailong_eater_open.png" />
+      <None Remove="res\nailong_eater_closed.png" />
+      <Resource Include="res\nailong_eater_closed.png" />
+      <None Remove="res\file_eaten_sheet.png" />
+      <Resource Include="res\file_eaten_sheet.png" />
     </ItemGroup>
 
     <ItemGroup>

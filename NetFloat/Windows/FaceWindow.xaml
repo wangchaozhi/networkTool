@@ -6,12 +6,15 @@
         xmlns:local="clr-namespace:NetFloat.Windows"
         mc:Ignorable="d"
         Title="FaceWindow" ShowInTaskbar="False" 
-      Height="68" Width="136"
+        Height="160" Width="170"
         WindowStyle="None" ResizeMode="NoResize"   Topmost="True"  Background="Transparent"  AllowsTransparency="True"    Cursor="Hand">
     <Grid Background="Transparent" >
-        <Image x:Name="FaceImage" Width="50" Height="50" Opacity="0"
+        <Image x:Name="OpenCharacterImage" Width="148" Height="148" Opacity="0"
                HorizontalAlignment="Center" VerticalAlignment="Center"
-               Source="pack://application:,,,/res/face.png"/> 
-        <Canvas x:Name="FileCanvas" IsHitTestVisible="False" />
+               Source="pack://application:,,,/res/nailong_eater_open.png"/>
+        <Canvas x:Name="EffectCanvas" IsHitTestVisible="False" />
+        <Image x:Name="ClosedCharacterImage" Width="148" Height="148" Opacity="0"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Source="pack://application:,,,/res/nailong_eater_closed.png"/>
     </Grid>
 </Window>

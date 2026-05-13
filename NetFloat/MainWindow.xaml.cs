@@ -13,6 +13,8 @@ public partial class MainWindow
     private long _lastBytesReceived;
     private DispatcherTimer? _timer;
     private NetworkInterface? _currentInterface;
+    private Point? _lastDragPoint;
+    private Point? _latestDragPoint;
 
     private const long KiloByte = 1024;
     private const long MegaByte = 1024 * KiloByte;
@@ -152,9 +154,25 @@ public partial class MainWindow
 
     private void Grid_DragEnter(object sender, DragEventArgs e)
     {
+        var position = e.GetPosition(FileCanvas);
+        _lastDragPoint = position;
+        _latestDragPoint = position;
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop)
             ? DragDropEffects.Copy
             : DragDropEffects.None;
+    }
+
+    private void Grid_DragOver(object sender, DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            e.Effects = DragDropEffects.None;
+            return;
+        }
+
+        _lastDragPoint = _latestDragPoint;
+        _latestDragPoint = e.GetPosition(FileCanvas);
+        e.Effects = DragDropEffects.Copy;
     }
 
     private void Grid_Drop(object sender, DragEventArgs e)
@@ -170,18 +188,48 @@ public partial class MainWindow
 
         Clipboard.SetText(string.Join(Environment.NewLine, files));
 
+        const double animationWidth = 170;
+        const double animationHeight = 160;
+        var dropPoint = e.GetPosition(FileCanvas);
+        var dragDirection = GetDragDirection(dropPoint);
+
         var newWindow = new FaceWindow
         {
-            Left = this.Left,
-            Top = this.Top,
-            Width = this.Width,
-            Height = this.Height,
+            Left = this.Left + (this.Width - animationWidth) / 2,
+            Top = this.Top + (this.Height - animationHeight) / 2,
+            Width = animationWidth,
+            Height = animationHeight,
             Topmost = true
         };
         this.Hide();
         newWindow.Show();
-        newWindow.AnimateFace(this);
-        newWindow.AnimateFlyingFile(e.GetPosition(FileCanvas));
+        var animationDropPoint = new Point(dropPoint.X + this.Left - newWindow.Left, dropPoint.Y + this.Top - newWindow.Top);
+        newWindow.PlayEatFile(this, animationDropPoint, dragDirection);
+        _lastDragPoint = null;
+        _latestDragPoint = null;
+    }
+
+    private Vector GetDragDirection(Point dropPoint)
+    {
+        if (_lastDragPoint is { } lastPoint && _latestDragPoint is { } latestPoint)
+        {
+            var dragDirection = latestPoint - lastPoint;
+            if (dragDirection.Length >= 1)
+            {
+                return dragDirection;
+            }
+        }
+
+        if (_latestDragPoint is { } latestDragPoint)
+        {
+            var dragDirection = dropPoint - latestDragPoint;
+            if (dragDirection.Length >= 1)
+            {
+                return dragDirection;
+            }
+        }
+
+        return new Vector(1, 0);
     }
 
     public void ShowWindow()

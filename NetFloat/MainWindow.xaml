@@ -11,7 +11,8 @@
     
     <Grid Background="Transparent" MouseDown="Grid_MouseDown"  AllowDrop="True"
           Drop="Grid_Drop"
-          DragEnter="Grid_DragEnter" >
+          DragEnter="Grid_DragEnter"
+          DragOver="Grid_DragOver" >
         <Grid.LayoutTransform>
             <ScaleTransform x:Name="scaleTransform"  ScaleX="{Binding CurrentScale}" 
                             ScaleY="{Binding CurrentScale}"/>
