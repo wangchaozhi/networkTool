@@ -101,7 +101,7 @@ jobs:
             publish_mode: self-contained
 
     env:
-      PROJECT_PATH: WpfApp2/WpfApp2.csproj
+      PROJECT_PATH: NetFloat/NetFloat.csproj
 
     steps:
       - name: Checkout

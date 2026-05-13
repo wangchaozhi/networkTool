@@ -1,0 +1,54 @@
+<Window x:Class="NetFloat.Windows.MuYuWindows"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MuYuWindows"
+        WindowStyle="None" ResizeMode="NoResize" Topmost="True"
+        Background="Transparent" AllowsTransparency="True"
+        Width="500" Height="500" Cursor="Hand">
+    
+    <Viewbox Stretch="Uniform">
+        <Canvas Width="400" Height="400">
+            <!-- 太极图整体路径 -->
+            <Path Fill="Black">
+                <Path.Data>
+                    <GeometryGroup>
+                        <!-- 左半圆 -->
+                        <PathGeometry>
+                            <PathFigure StartPoint="200,0" IsClosed="True">
+                                <ArcSegment Point="200,400" Size="200,200" SweepDirection="Counterclockwise" />
+                                <ArcSegment Point="200,0" Size="200,200" SweepDirection="Counterclockwise" />
+                            </PathFigure>
+                        </PathGeometry>
+
+                        <!-- 上半小白圆 -->
+                        <EllipseGeometry Center="200,100" RadiusX="50" RadiusY="50"/>
+                    </GeometryGroup>
+                </Path.Data>
+            </Path>
+
+            <!-- 白色右半圆路径 -->
+            <Path Fill="White">
+                <Path.Data>
+                    <GeometryGroup>
+                        <!-- 右半圆 -->
+                        <PathGeometry>
+                            <PathFigure StartPoint="200,0" IsClosed="True">
+                                <ArcSegment Point="200,400" Size="200,200" SweepDirection="Clockwise" />
+                                <ArcSegment Point="200,0" Size="200,200" SweepDirection="Clockwise" />
+                            </PathFigure>
+                        </PathGeometry>
+
+                        <!-- 下半小黑圆 -->
+                        <EllipseGeometry Center="200,300" RadiusX="50" RadiusY="50"/>
+                    </GeometryGroup>
+                </Path.Data>
+            </Path>
+
+            <!-- 上面黑点 -->
+            <Ellipse Width="25" Height="25" Fill="Black" Canvas.Left="187.5" Canvas.Top="87.5"/>
+            
+            <!-- 下面白点 -->
+            <Ellipse Width="25" Height="25" Fill="White" Canvas.Left="187.5" Canvas.Top="287.5"/>
+        </Canvas>
+    </Viewbox>
+</Window>

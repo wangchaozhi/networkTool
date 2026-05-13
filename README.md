@@ -1,4 +1,4 @@
-# NetFloat
+﻿# NetFloat
 
 NetFloat 是一个基于 WPF / .NET 8 的 Windows 桌面悬浮网速工具，用于实时显示网络上传和下载速度。
 
@@ -29,13 +29,13 @@ NetFloat 是一个基于 WPF / .NET 8 的 Windows 桌面悬浮网速工具，用
 ## 构建
 
 ```bash
-dotnet build WpfApp2/WpfApp2.csproj
+dotnet build NetFloat/NetFloat.csproj
 ```
 
 发布示例：
 
 ```bash
-dotnet publish WpfApp2/WpfApp2.csproj -c Release -r win-x86 --self-contained false
+dotnet publish NetFloat/NetFloat.csproj -c Release -r win-x86 --self-contained false
 ```
 
 ## 发布
