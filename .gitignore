@@ -13,8 +13,8 @@ obj/
 .idea/
 *.DotSettings.user
 
-# Resources (local only)
-res/
+# Root-level local resources
+/res/
 
 # Logs
 *.log
