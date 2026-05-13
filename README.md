@@ -19,7 +19,9 @@
 
 ## 截图
 
-> 浮窗默认贴靠屏幕右上角，可自由拖动
+运行效果如图所示：
+
+![image](https://github.com/user-attachments/assets/fef2fc0b-701f-497b-84f4-8683203b912f)
 
 ## 技术栈
 
