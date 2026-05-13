@@ -6,7 +6,7 @@
         xmlns:wpfApp2="clr-namespace:WpfApp2"
         mc:Ignorable="d"
         ShowInTaskbar="False" 
-        Title="MainWindow" Height="68" Width="136"
+        Title="NetFloat" Height="68" Width="136"
         WindowStyle="None" ResizeMode="NoResize"   Topmost="True"   Background="Transparent"  AllowsTransparency="True"  Cursor="Hand">
     
     <Grid Background="Transparent" MouseDown="Grid_MouseDown"  AllowDrop="True"

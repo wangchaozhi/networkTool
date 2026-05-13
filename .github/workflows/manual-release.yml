@@ -51,7 +51,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ inputs.tag }}".Trim()
-          $title = "WpfApp2 $tag"
+          $title = "NetFloat $tag"
           $notes = "Automated build from workflow run $env:GITHUB_RUN_NUMBER."
 
           gh release view $tag *> $null
@@ -144,7 +144,7 @@ jobs:
         run: |
           $tag = "${{ inputs.tag }}".Trim()
           $safeTag = $tag -replace '[^A-Za-z0-9._-]', '-'
-          $assetName = "WpfApp2-$safeTag-${{ matrix.runtime }}-${{ matrix.publish_mode }}.zip"
+          $assetName = "NetFloat-$safeTag-${{ matrix.runtime }}-${{ matrix.publish_mode }}.zip"
           $publishDir = Join-Path $env:RUNNER_TEMP "publish"
           $assetPath = Join-Path $env:RUNNER_TEMP $assetName
 

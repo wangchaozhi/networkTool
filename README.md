@@ -1,33 +1,22 @@
-# 网速浮窗
+# NetFloat
 
-一个基于 WPF / .NET 8 的 Windows 桌面悬浮工具，实时显示网络上传/下载速度，支持丰富的外观自定义。
+NetFloat 是一个基于 WPF / .NET 8 的 Windows 桌面悬浮网速工具，用于实时显示网络上传和下载速度。
 
 ## 功能
 
-- **实时网速**：自动识别最佳网络接口，每秒刷新上传/下载速度（KB/s · MB/s · GB/s）
-- **系统托盘**：右键菜单控制所有功能，双击托盘图标显示/隐藏浮窗
-- **主题**：默认白色 / 透明 / 小麦色
-- **字体**：Arial · Times New Roman · 楷体 · 宋体 · 黑体
-- **缩放**：0.6× · 0.8× · 1× · 2× · 3×
-- **圆角**：滑块实时调节边框圆角
-- **图标**：默认 / 棕色风格切换
-- **文件拖拽**：将文件拖入浮窗，自动复制路径到剪贴板，触发文件飞入动画
-- **开机自启**：一键设置/取消 Windows 开机启动
-- **在线更新**：检查并拉取新版本
-- **木鱼窗口**：太极图样式的木鱼小窗口
-- **配置持久化**：设置保存至 `%AppData%\MyApp\config.json`，下次启动自动还原
-
-## 截图
-
-运行效果如图所示：
-
-![image](https://github.com/user-attachments/assets/fef2fc0b-701f-497b-84f4-8683203b912f)
+- 实时显示上传/下载速度，支持 KB/s、MB/s、GB/s。
+- 自动选择合适的活动网络接口。
+- 系统托盘菜单控制显示、隐藏、退出、主题、字体、缩放和圆角。
+- 支持开机自启。
+- 支持文件拖拽，复制文件路径到剪贴板并播放动画。
+- 配置保存至 `%AppData%\NetFloat\config.json`。
+- 支持 GitHub Actions 手动发布 6 种 Windows 资产。
 
 ## 技术栈
 
 | 依赖 | 版本 |
-|------|------|
-| .NET / WPF | 8.0 (win-x86) |
+| --- | --- |
+| .NET / WPF | 8.0 |
 | HandyControl | 3.5.1 |
 | Hardcodet.Wpf.TaskbarNotification | 1.0.5 |
 | Newtonsoft.Json | 13.0.3 |
@@ -35,7 +24,7 @@
 ## 运行要求
 
 - Windows 10 / 11
-- [.NET 8 Desktop Runtime (x86)](https://dotnet.microsoft.com/download/dotnet/8.0)
+- .NET 8 Desktop Runtime，除非使用 self-contained 发布包
 
 ## 构建
 
@@ -43,21 +32,23 @@
 dotnet build WpfApp2/WpfApp2.csproj
 ```
 
-发布单文件：
+发布示例：
 
 ```bash
 dotnet publish WpfApp2/WpfApp2.csproj -c Release -r win-x86 --self-contained false
 ```
 
-## 版本历史
+## 发布
 
-| Tag | 说明 |
-|-----|------|
-| v0.3.1 | 代码优化：消除假 async、修复 Timer 双采样、统一配置容错、新增木鱼窗口 |
-| v0.3 | 图标切换、文件拖拽复制路径、FaceWindow 动画、在线更新、用户配置持久化 |
-| v0.2 | 太极窗口、圆角滑块、缩放、字体、主题切换 |
-| v0.1.0 | 初始版本：网速悬浮窗 |
+GitHub Actions 中的 `Manual Release` 工作流支持手动输入 tag，并生成以下资产：
 
-## 许可
+- `NetFloat-<tag>-win-x86-framework-dependent.zip`
+- `NetFloat-<tag>-win-x86-self-contained.zip`
+- `NetFloat-<tag>-win-x64-framework-dependent.zip`
+- `NetFloat-<tag>-win-x64-self-contained.zip`
+- `NetFloat-<tag>-win-arm64-framework-dependent.zip`
+- `NetFloat-<tag>-win-arm64-self-contained.zip`
 
-本项目仅供个人学习使用。
+## 说明
+
+当前项目使用 WPF，因此运行平台为 Windows。若要跨平台，需要迁移到 Avalonia UI 等跨平台桌面框架。

@@ -11,6 +11,10 @@
 <!--        <RuntimeIdentifiers>linux-x64;win-x86</RuntimeIdentifiers>-->
         <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
         <ApplicationIcon>res\icon.ico</ApplicationIcon>
+        <AssemblyName>NetFloat</AssemblyName>
+        <RootNamespace>WpfApp2</RootNamespace>
+        <Product>NetFloat</Product>
+        <Description>Desktop floating network speed monitor</Description>
         <NoWarn>$(NoWarn);NU1701;CS1668</NoWarn>
     </PropertyGroup>
 

@@ -1,12 +1,12 @@
-# WpfApp2 优化技术文档
+# NetFloat 优化技术文档
 
 ## 项目现状
 
-WpfApp2 是一个基于 .NET 8 WPF 的 Windows 桌面悬浮工具。当前主要能力包括：
+NetFloat 是一个基于 .NET 8 WPF 的 Windows 桌面悬浮工具。当前主要能力包括：
 
 - 悬浮窗展示上传和下载速度。
 - 托盘菜单控制显示隐藏、主题、字体、缩放、圆角、开机自启和更新检查。
-- 配置保存到 `%AppData%\MyApp\config.json`。
+- 配置保存到 `%AppData%\NetFloat\config.json`。
 - 文件拖拽后复制路径并播放窗口动画。
 
 ## 优化目标
@@ -79,6 +79,6 @@ WpfApp2 是一个基于 .NET 8 WPF 的 Windows 桌面悬浮工具。当前主要
 
 - 抽象 `NetworkSpeedService`，通过事件或绑定向 ViewModel 暴露速度文本。
 - 将上传和下载速度改为 ViewModel 属性绑定，减少 code-behind 直接操作控件。
-- 统一应用名，替换 `WpfApp2`、`MyApp`、`我的应用` 的混用。
+- 保持应用名统一为 `NetFloat`。
 - 更新托盘图标依赖，消除 `NU1701` 兼容警告。
 - 为设置保存增加防抖，避免滑块快速变化时频繁写入配置文件。

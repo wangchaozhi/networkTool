@@ -12,7 +12,7 @@
         <local:IconToBooleanConverter x:Key="IconConverter"/>
             <tb:TaskbarIcon x:Key="MyNotifyIcon"
                             IconSource="pack://application:,,,/res/icon.ico"
-                            ToolTipText="我的应用"
+                            ToolTipText="NetFloat"
                             Visibility="Visible" >
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu  Opened="ContextMenu_Opened">

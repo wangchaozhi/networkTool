@@ -24,9 +24,9 @@ namespace WpfApp2;
 /// </summary>
 public partial class App : Application
 {
-    private const string AppName = "MyApp";
+    private const string AppName = "NetFloat";
     private const string RunRegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-    private const string AppRegistryPath = @"SOFTWARE\MyCompany\MyApp";
+    private const string AppRegistryPath = @"SOFTWARE\NetFloat";
     private const string UpdateCheckBaseUrl = "http://8.134.168.19:3000/api/check-for-updates";
     private static readonly TimeSpan UpdateCheckTimeout = TimeSpan.FromMilliseconds(500);
 
@@ -103,7 +103,7 @@ public partial class App : Application
         if (!hasMutex)
         {
             // 如果获取互斥锁失败，则可能已有实例在运行
-            IntPtr hWnd = FindWindow(null, "MainWindow"); // 确保窗口标题正确
+            IntPtr hWnd = FindWindow(null, AppName); // 确保窗口标题正确
             if (hWnd != IntPtr.Zero)
             {
                 SetForegroundWindow(hWnd); // 将已运行的实例窗口带到前台
@@ -126,7 +126,7 @@ public partial class App : Application
 
         var windowService = new WindowService(mainWindow);
         string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        string appDirectory = Path.Combine(appDataPath, "MyApp");
+        string appDirectory = Path.Combine(appDataPath, AppName);
         string jsonFilePath = Path.Combine(appDirectory, "config.json");
 
         if (!Directory.Exists(appDirectory))
