@@ -38,16 +38,6 @@ dotnet build NetFloat/NetFloat.csproj
 dotnet publish NetFloat/NetFloat.csproj -c Release -r win-x86 --self-contained false
 ```
 
-## 发布
-
-GitHub Actions 中的 `Manual Release` 工作流支持手动输入 tag，并生成以下资产：
-
-- `NetFloat-<tag>-win-x86-framework-dependent.zip`
-- `NetFloat-<tag>-win-x86-self-contained.zip`
-- `NetFloat-<tag>-win-x64-framework-dependent.zip`
-- `NetFloat-<tag>-win-x64-self-contained.zip`
-- `NetFloat-<tag>-win-arm64-framework-dependent.zip`
-- `NetFloat-<tag>-win-arm64-self-contained.zip`
 
 ## 说明
 
